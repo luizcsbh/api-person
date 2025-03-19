@@ -336,7 +336,7 @@
                 },
                 "responses": {
                     "200": {
-                        "description": "Cliente atualizado com sucesso",
+                        "description": "Pessoa atualizado com sucesso",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -347,7 +347,7 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "Cliente atualizado com sucesso!"
+                                            "example": "Pessoa atualizado com sucesso!"
                                         },
                                         "data": {
                                             "$ref": "#/components/schemas/Pessoas"
@@ -358,8 +358,8 @@
                             }
                         }
                     },
-                    "422": {
-                        "description": "Erro ao processar a atualização do cliente",
+                    "500": {
+                        "description": "Erro ao processar a atualização da pessoa",
                         "content": {
                             "application/json": {
                                 "schema": {
