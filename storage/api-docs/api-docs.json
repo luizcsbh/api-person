@@ -1,0 +1,501 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "API-PERSON ",
+        "description": "Documentação da API-PERSON com Swagger Service.",
+        "contact": {
+            "name": "Luiz Santos Full Stack Developer ",
+            "email": "luizcsdev@gmail.com"
+        },
+        "license": {
+            "name": "MIT",
+            "url": "https://opensource.org/licenses/MIT"
+        },
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "http://localhost:8000/api",
+            "description": "Servidor Local"
+        }
+    ],
+    "paths": {
+        "/pessoas": {
+            "get": {
+                "tags": [
+                    "Pessoas"
+                ],
+                "summary": "Lista todos as pessoas",
+                "description": "Retorna uma lista de pessoas armazenados no banco de dados.",
+                "operationId": "ac423fa98d261d82297b099cf6195b5f",
+                "responses": {
+                    "200": {
+                        "description": "Lista de pessoas retornada com sucesso",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/Pessoas"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Nenhum pessoas encontrado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Não há pessoas cadastrados!"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Erro interno ao buscar os pessoas",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Erro ao buscar os pessoas."
+                                        },
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Detalhes do erro"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Pessoas"
+                ],
+                "summary": "Cria uma nova pessoa",
+                "description": "Registra uma nova pessoa no banco de dados.",
+                "operationId": "53dddbadc4166ae9a5bf1b92ec4641ab",
+                "requestBody": {
+                    "description": "Dados necessários para criar uma nova pessoa",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "pes_nome",
+                                    "pes_data_nascimento",
+                                    "pes_sexo",
+                                    "pes_mae",
+                                    "pes_pai"
+                                ],
+                                "properties": {
+                                    "pes_nome": {
+                                        "type": "string",
+                                        "example": "João da Silva"
+                                    },
+                                    "pes_data_nascimento": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "1978-08-23"
+                                    },
+                                    "pes_sexo": {
+                                        "type": "string",
+                                        "example": "Masculino"
+                                    },
+                                    "pes_mae": {
+                                        "type": "string",
+                                        "example": "Maria Aparecida da Silva"
+                                    },
+                                    "pes_pai": {
+                                        "type": "string",
+                                        "example": "Cícero Joaquim da Silva"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Pessoa criado com sucesso",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Pessoa criado com sucesso."
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/Pessoas"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Erro ao criar o pessoa",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Erro ao criar o pessoa."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/pessoas/{id}": {
+            "get": {
+                "tags": [
+                    "Pessoas"
+                ],
+                "summary": "Obtém os detalhes de uma pessoa",
+                "description": "Retorna os detalhes de uma pessoa em específico pelo ID.",
+                "operationId": "4cfd7981ecb80d48e5f38b061b54068c",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID da pessoa",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Detalhes da pessoa retornados com sucesso",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/Pessoas"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Pessoa não encontrado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Pessoa não encontrado!"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Erro interno ao buscar os pessoas",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Erro ao buscar os pessoas."
+                                        },
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Detalhes do erro"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Pessoas"
+                ],
+                "summary": "Atualiza uma pessoa existente",
+                "description": "Atualiza os dados de uma pessoa com base no ID fornecido.",
+                "operationId": "8e2ac4d483c67338acadddc95bca345c",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID da pessoa a ser atualizado",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "description": "Dados para atualização da pessoa",
+                    "required": false,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "pes_nome",
+                                    "pes_data_nascimento",
+                                    "pes_sexo",
+                                    "pes_mae",
+                                    "pes_pai"
+                                ],
+                                "properties": {
+                                    "pes_nome": {
+                                        "type": "string",
+                                        "example": "João da Silva"
+                                    },
+                                    "pes_data_nascimento": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "1978-08-23"
+                                    },
+                                    "pes_sexo": {
+                                        "type": "string",
+                                        "example": "Masculino"
+                                    },
+                                    "pes_mae": {
+                                        "type": "string",
+                                        "example": "Maria Aparecida da Silva"
+                                    },
+                                    "pes_pai": {
+                                        "type": "string",
+                                        "example": "Cícero Joaquim da Silva"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Cliente atualizado com sucesso",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Cliente atualizado com sucesso!"
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/Pessoas"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Erro ao processar a atualização do cliente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Erro ao processar a solicitação."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Pessoas"
+                ],
+                "summary": "Exclui um pessoa",
+                "description": "Exclui um pessoa do banco de dados com base no ID fornecido.",
+                "operationId": "5178a7613183adf1330f7c2581d0986e",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID da pessoa a ser excluído",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Pessoa excluído com sucesso",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Pessoa excluído com sucesso."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Erro ao excluir o pessoa",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Erro ao excluir o pessoa."
+                                        },
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Detalhes do erro."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "Pessoas": {
+                "title": "Pessoa",
+                "description": "Modelo de Pessoa",
+                "required": [
+                    "pes_nome",
+                    "pes_data_nascimento",
+                    "pes_sexo",
+                    "pes_mae",
+                    "pes_pai"
+                ],
+                "properties": {
+                    "pes_id": {
+                        "description": "ID do Pessoa",
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "pes_nome": {
+                        "description": "Nome da pessoa",
+                        "type": "string",
+                        "example": "João da Silva"
+                    },
+                    "pes_data_nascimento": {
+                        "description": "Data de nascimento",
+                        "type": "string",
+                        "example": "1978-08-23"
+                    },
+                    "pes_sexo": {
+                        "description": "Sexo da pessoa",
+                        "type": "string",
+                        "example": "Masculino"
+                    },
+                    "pes_mae": {
+                        "description": "Nome da mãe",
+                        "type": "string",
+                        "example": "Maria Aparecida da Silva"
+                    },
+                    "pes_pai": {
+                        "description": "Nome da pai",
+                        "type": "string",
+                        "example": "Cícero Joaquim da Silva"
+                    }
+                },
+                "type": "object"
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Pessoas",
+            "description": "Gerenciamento de pessoas"
+        }
+    ]
+}
