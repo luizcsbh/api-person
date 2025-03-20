@@ -6,8 +6,8 @@ use App\Http\Requests\Pessoa\StorePessoaRequest;
 use App\Http\Requests\Pessoa\UpdatePessoaRequest;
 use App\Http\Resources\PessoaResource;
 use App\Services\PessoaService;
-use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Http\Request;
 
 class PessoaController extends Controller
 {
@@ -35,7 +35,7 @@ class PessoaController extends Controller
      *     ),
      *     @OA\Response(
      *         response=404,
-     *         description="Nenhum pessoas encontrado",
+     *         description="Nenhum pessoa encontrado",
      *         @OA\JsonContent(
      *             type="object",
      *             @OA\Property(property="success", type="boolean", example=false),
@@ -54,27 +54,31 @@ class PessoaController extends Controller
      *     )
      * )
      */
-    public function index()
+    public function index(Request $request)
     {
         try {
-            $pessoas = $this->pessoaService->getAllPessoas();
-
-            if($pessoas->isEmpty()) {
+            $perPage = $request->input('per_page', 10);
+            $pessoas = $this->pessoaService->paginate($perPage);
+    
+            if ($pessoas->total() === 0) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Nenhuma pessoa encontrada'
+                    'message' => 'Nenhuma pessoa encontrada',
+                    'data' => []
                 ], Response::HTTP_NOT_FOUND);
             }
-
-            return response()->json([
-                'success' => true,
-                'data' => PessoaResource::collection($pessoas)
-            ], Response::HTTP_OK);
+    
+            return PessoaResource::collection($pessoas)
+                ->additional([
+                    'success' => true,
+                    'message' => 'Lista de pessoas recuperada com sucesso'
+                ],Response::HTTP_OK);
+    
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'Erro ao buscar pessoas',
-                'error' => $e->getMessage()
+                'error' => config('app.debug') ? $e->getMessage() : null
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }

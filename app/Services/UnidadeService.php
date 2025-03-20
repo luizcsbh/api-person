@@ -24,6 +24,16 @@ class UnidadeService
     }
 
     /**
+     * Retorna todas as relações unidades cadastradas com paginacao.
+     *
+     * @return mixed Lista de relações unidades paginada.
+     */
+    public function paginate(int $perPage = 10)
+    {
+        return $this->unidadeRepository->paginate($perPage);
+    }
+
+    /**
      * Retorna uma relação Unidade pelo ID.
      *
      * @param int $id Identificador da relação Unidade.
@@ -60,11 +70,6 @@ class UnidadeService
      */
     public function updateUnidade(array $data, $id)
     {
-        $unidade = $this->unidadeRepository->findById($id);
-        if (!$unidade) {
-            throw new Exception('Unidade não encontrado.');
-        }
-
         return $this->unidadeRepository->update($data, $id);
     }
 

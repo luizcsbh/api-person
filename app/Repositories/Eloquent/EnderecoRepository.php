@@ -3,16 +3,16 @@
 namespace App\Repositories\Eloquent;
 
 use Exception;
-use App\Models\Pessoas;
+use App\Models\Endereco;
 use Illuminate\Support\Facades\DB;
-use App\Repositories\PessoaRepositoryInterface;
+use App\Repositories\EnderecoRepositoryInterface;
 use Illuminate\Pagination\LengthAwarePaginator;
 
-class PessoaRepository implements PessoaRepositoryInterface
+class EnderecoRepository implements EnderecoRepositoryInterface
 {
     protected $model;
 
-    public function __construct(Pessoas $model)
+    public function __construct(Endereco $model)
     {
         $this->model = $model;
     }
@@ -24,7 +24,7 @@ class PessoaRepository implements PessoaRepositoryInterface
 
     public function paginate(int $perPage = 10): LengthAwarePaginator
     {
-        return $this->model->with(['enderecos','lotacoes'])
+        return $this->model->with(['cidades'])
             ->paginate($perPage);
     }
 
@@ -37,9 +37,9 @@ class PessoaRepository implements PessoaRepositoryInterface
     {
         try {
             DB::beginTransaction();
-            $pessoa = $this->model->create($data);
+            $endereco = $this->model->create($data);
             DB::commit();
-            return $pessoa;
+            return $endereco;
         } catch (Exception $e) {
             DB::rollBack();
             throw $e;
@@ -50,13 +50,13 @@ class PessoaRepository implements PessoaRepositoryInterface
     {
         try {
             DB::beginTransaction();
-            $pessoa = $this->model->find($id);
-            if (!$pessoa) {
-                throw new Exception('Pessoa não encontrada.');
+            $endereco = $this->model->find($id);
+            if (!$endereco) {
+                throw new Exception('Endereço não encontrada.');
             }
-            $pessoa->update($data);
+            $endereco->update($data);
             DB::commit();
-            return $pessoa;
+            return $endereco;
         } catch (Exception $e) {
             DB::rollBack();
             throw $e;
@@ -67,13 +67,13 @@ class PessoaRepository implements PessoaRepositoryInterface
     {
         try {
             DB::beginTransaction();
-            $pessoa = $this->model->find($id);
-            if (!$pessoa) {
-                throw new Exception('Pessoa não encontrada.');
+            $endereco = $this->model->find($id);
+            if (!$endereco) {
+                throw new Exception('Endereço não encontrada.');
             }
-            $pessoa->delete();
+            $endereco->delete();
             DB::commit();
-            return $pessoa;
+            return $endereco;
         } catch (Exception $e) {
             DB::rollBack();
             throw $e;

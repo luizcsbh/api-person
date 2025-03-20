@@ -23,6 +23,16 @@ class LotacaoService
         return $this->lotacaoRepository->all();
     }
 
+        /**
+     * Retorna todas as relações Pessoa cadastradas com paginacao.
+     *
+     * @return mixed Lista de relações Pessoa paginada.
+     */
+    public function paginate(int $perPage = 10)
+    {
+        return $this->lotacaoRepository->paginate($perPage);
+    }
+
     /**
      * Retorna uma relação Lotação pelo ID.
      *

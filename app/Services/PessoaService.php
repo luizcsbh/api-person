@@ -24,6 +24,16 @@ class PessoaService
     }
 
     /**
+     * Retorna todas as relações Pessoa cadastradas com paginacao.
+     *
+     * @return mixed Lista de relações Pessoa paginada.
+     */
+    public function paginate(int $perPage = 10)
+    {
+        return $this->pessoaRepository->paginate($perPage);
+    }
+
+    /**
      * Retorna uma relação Pessoa pelo ID.
      *
      * @param int $id Identificador da relação Pessoa.

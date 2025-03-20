@@ -15,6 +15,7 @@ class PessoaResource extends JsonResource
             'pes_sexo' => $this->pes_sexo,  
             'pes_mae' => $this->pes_mae,
             'pes_pai' => $this->pes_pai,
+            'lotacoes' => LotacaoResource::collection($this->whenLoaded('lotacoes')),
         ];
     }
 }

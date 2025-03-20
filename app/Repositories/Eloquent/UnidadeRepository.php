@@ -6,6 +6,7 @@ use Exception;
 use App\Models\Unidade;
 use Illuminate\Support\Facades\DB;
 use App\Repositories\UnidadeRepositoryInterface;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class UnidadeRepository implements UnidadeRepositoryInterface
 {
@@ -21,18 +22,24 @@ class UnidadeRepository implements UnidadeRepositoryInterface
         return $this->model->orderBy('unid_id', 'asc')->get();
     }
 
+    public function paginate(int $perPage = 10): LengthAwarePaginator
+    {
+        return $this->model->with(['enderecos','lotacoes'])
+            ->paginate($perPage);
+    }
+
     public function findById($id)
     {
-        return $this->model->find($id);
+        return $this->model->findOrFail($id);
     }
 
     public function create(array $data)
     {
         try {
             DB::beginTransaction();
-            $pessoa = $this->model->create($data);
+            $unidade = $this->model->create($data);
             DB::commit();
-            return $pessoa;
+            return $unidade;
         } catch (Exception $e) {
             DB::rollBack();
             throw $e;
@@ -43,10 +50,13 @@ class UnidadeRepository implements UnidadeRepositoryInterface
     {
         try {
             DB::beginTransaction();
-            $pessoa = $this->model->find($id);
-            $pessoa->update($data);
+            $unidade = $this->model->find($id);
+            if (!$unidade) {
+                throw new Exception('Unidade não encontrada.');
+            }
+            $unidade->update($data);
             DB::commit();
-            return $pessoa;
+            return $unidade;
         } catch (Exception $e) {
             DB::rollBack();
             throw $e;
@@ -57,10 +67,13 @@ class UnidadeRepository implements UnidadeRepositoryInterface
     {
         try {
             DB::beginTransaction();
-            $pessoa = $this->model->find($id);
-            $pessoa->delete();
+            $unidade = $this->model->find($id);
+            if (!$unidade) {
+                throw new Exception('Unidade não encontrada.');
+            }
+            $unidade->deleteOrFail();
             DB::commit();
-            return $pessoa;
+            return $unidade;
         } catch (Exception $e) {
             DB::rollBack();
             throw $e;

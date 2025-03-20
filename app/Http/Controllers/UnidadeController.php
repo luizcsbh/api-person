@@ -6,9 +6,8 @@ use App\Http\Requests\Unidade\StoreUnidadeRequest;
 use App\Http\Requests\Unidade\UpdateUnidadeRequest;
 use App\Http\Resources\UnidadeResource;
 use App\Services\UnidadeService;
-use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-
+use Illuminate\Http\Request;
 class UnidadeController extends Controller
 {
     protected $unidadeService;
@@ -54,27 +53,31 @@ class UnidadeController extends Controller
      *     )
      * )
      */
-    public function index()
+    public function index(Request $request)
     {
         try {
-            $unidades = $this->unidadeService->getAllUnidades();
-
-            if($unidades->isEmpty()) {
+            $perPage = $request->input('per_page', 10);
+            $unidade = $this->unidadeService->paginate($perPage);
+    
+            if ($unidade->total() === 0) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Nenhuma unidade encontrada'
+                    'message' => 'Nenhuma unidade encontrada',
+                    'data' => []
                 ], Response::HTTP_NOT_FOUND);
             }
-
-            return response()->json([
-                'success' => true,
-                'data' => UnidadeResource::collection($unidades)
-            ], Response::HTTP_OK);
+    
+            return UnidadeResource::collection($unidade)
+                ->additional([
+                    'success' => true,
+                    'message' => 'Lista de unidades recuperada com sucesso'
+                ],Response::HTTP_OK);
+    
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'Erro ao buscar unidades',
-                'error' => $e->getMessage()
+                'error' => config('app.debug') ? $e->getMessage() : null
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }

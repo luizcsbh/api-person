@@ -65,12 +65,12 @@ class Lotacao extends Model
         'lot_portaria'
     ];
 
-    public function pessoas()
+    public function pessoa()
     {
         return $this->belongsTo(Pessoas::class, 'pes_id', 'pes_id');
     }
 
-    public function unidades()
+    public function unidade()
     {
         return $this->belongsTo(Unidade::class, 'uni_id', 'uni_id');
     }

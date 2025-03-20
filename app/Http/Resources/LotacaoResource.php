@@ -15,6 +15,7 @@ class LotacaoResource extends JsonResource
             'lot_data_lotacao' => $this->lot_data_lotacao,
             'lot_data_remocao' => $this->lot_data_remocao,
             'lot_portaria' => $this->lot_portaria,
+            'unidades' => UnidadeResource::collection($this->whenLoaded('unidades')),
         ];
     }
 }

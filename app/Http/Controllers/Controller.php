@@ -34,9 +34,13 @@ use Illuminate\Routing\Controller as BaseController;
  *     name="Unidade",
  *     description="Gerenciamento das unidades"
  * ),
-  * @OA\Tag(
- *     name="Lotacao",
+ * @OA\Tag(
+ *     name="Lotação",
  *     description="Gerenciamento das lotações"
+ * ),
+ *  * @OA\Tag(
+ *     name="Endereço",
+ *     description="Gerenciamento dos endereços"
  * ),
  */
 class Controller extends BaseController

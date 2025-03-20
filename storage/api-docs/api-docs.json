@@ -20,6 +20,852 @@
         }
     ],
     "paths": {
+        "/enderecos": {
+            "get": {
+                "tags": [
+                    "Endereço"
+                ],
+                "summary": "Lista todos os endereços",
+                "description": "Retorna uma lista dos endereços armazenados no banco de dados.",
+                "operationId": "736b5681b3a3623d5350cfb852357250",
+                "responses": {
+                    "200": {
+                        "description": "Lista de endereços retornada com sucesso",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/Endereco"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Nenhum endereços encontrado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Não há endereços cadastrados!"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Erro interno ao buscar os endereços",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Erro ao buscar os endereços."
+                                        },
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Detalhes do erro"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Endereço"
+                ],
+                "summary": "Cria um novo Endereço",
+                "description": "Registra um novo Endereço no banco de dados.",
+                "operationId": "649a502077b75ae60503d438b32c3adb",
+                "requestBody": {
+                    "description": "Dados necessários para criar um novo Endereço",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "cid_id",
+                                    "end_tipo_logradouro",
+                                    "end_logradouro",
+                                    "end_numero",
+                                    "end_bairro"
+                                ],
+                                "properties": {
+                                    "cid_id": {
+                                        "type": "integer",
+                                        "example": "1"
+                                    },
+                                    "end_tipo_logradouro": {
+                                        "type": "string",
+                                        "example": "Avenida"
+                                    },
+                                    "end_logradouro": {
+                                        "type": "string",
+                                        "example": "Gustavo da Silveira"
+                                    },
+                                    "end_numero": {
+                                        "type": "integer",
+                                        "example": "1000"
+                                    },
+                                    "end_bairro": {
+                                        "type": "string",
+                                        "example": "Horto Florestal"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Endereço criado com sucesso",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Endereco criado com sucesso."
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/Endereco"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Erro ao criar o Endereço",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Erro ao criar o Endereço."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/enderecos/{id}": {
+            "get": {
+                "tags": [
+                    "Endereço"
+                ],
+                "summary": "Obtém os detalhes de uma Endereço",
+                "description": "Retorna os detalhes de uma Endereço em específico pelo ID.",
+                "operationId": "71c7a5cd3a34ebde0c07ce01de7ffcd3",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID da Endereco",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Detalhes da Endereco retornados com sucesso",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/Endereco"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Endereco não encontrado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Endereco não encontrado!"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Erro interno ao buscar os enderecos",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Erro ao buscar os enderecos."
+                                        },
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Detalhes do erro"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Endereço"
+                ],
+                "summary": "Atualiza uma Endereço existente",
+                "description": "Atualiza os dados de uma Endereço com base no ID fornecido.",
+                "operationId": "6d108c91b084144567f48047c255c13a",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID da Endereço a ser atualizado",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "description": "Dados para atualização da Endereco",
+                    "required": false,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "cid_id",
+                                    "end_tipo_logradouro",
+                                    "end_logradouro",
+                                    "end_numero",
+                                    "end_bairro"
+                                ],
+                                "properties": {
+                                    "cid_id": {
+                                        "type": "integer",
+                                        "example": "1"
+                                    },
+                                    "end_tipo_logradouro": {
+                                        "type": "string",
+                                        "example": "Avenida"
+                                    },
+                                    "end_logradouro": {
+                                        "type": "string",
+                                        "example": "Gustavo da Silveira"
+                                    },
+                                    "end_numero": {
+                                        "type": "integer",
+                                        "example": "1000"
+                                    },
+                                    "end_bairro": {
+                                        "type": "string",
+                                        "example": "Horto Florestal"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Endereço atualizado com sucesso",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Endereco atualizado com sucesso!"
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/Endereco"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Erro ao processar a atualização da Endereco",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Erro ao processar a solicitação."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Endereço"
+                ],
+                "summary": "Exclui um Endereco",
+                "description": "Exclui um Endereço do banco de dados com base no ID fornecido.",
+                "operationId": "09da19df7ac2b9d40b4cd5604730d370",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID da Endereço a ser excluído",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Endereço excluído com sucesso",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Endereço excluído com sucesso."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Erro ao excluir o Endereço",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Erro ao excluir o Endereço."
+                                        },
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Detalhes do erro."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/lotacoes": {
+            "get": {
+                "tags": [
+                    "Lotação"
+                ],
+                "summary": "Lista todos as lotações",
+                "description": "Retorna uma lista de lotações armazenados no banco de dados.",
+                "operationId": "a236253c0d49f41a6eef6f3f124a518f",
+                "responses": {
+                    "200": {
+                        "description": "Lista de lotações retornada com sucesso",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/Lotação"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Nenhum lotações encontrado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Não há lotações cadastrados!"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Erro interno ao buscar os lotações",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Erro ao buscar os lotações."
+                                        },
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Detalhes do erro"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Lotação"
+                ],
+                "summary": "Cria uma nova Lotação",
+                "description": "Registra uma nova Lotação no banco de dados.",
+                "operationId": "19b19da6e0ed54bc68d6c3805870382d",
+                "requestBody": {
+                    "description": "Dados necessários para criar uma nova Lotação",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "pes_id",
+                                    "unid_id",
+                                    "lot_data_lotacao",
+                                    "lot_data_remocao",
+                                    "lot_portaria"
+                                ],
+                                "properties": {
+                                    "pes_id": {
+                                        "type": "integer",
+                                        "example": "1"
+                                    },
+                                    "unid_id": {
+                                        "type": "integer",
+                                        "example": "1"
+                                    },
+                                    "lot_data_lotacao": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2021-08-23"
+                                    },
+                                    "lot_data_remocao": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2024-11-01"
+                                    },
+                                    "lot_portaria": {
+                                        "type": "string",
+                                        "example": "Portaria 123.023/2024"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Lotação criado com sucesso",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Lotação criado com sucesso."
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/Lotação"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Erro ao criar o Lotação",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Erro ao criar o Lotação."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/lotacoes/{id}": {
+            "get": {
+                "tags": [
+                    "Lotação"
+                ],
+                "summary": "Obtém os detalhes de uma Lotação",
+                "description": "Retorna os detalhes de uma Lotação em específico pelo ID.",
+                "operationId": "eafd1ead0d0c3dea7f7803abeae7fa7a",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID da Lotação",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Detalhes da Lotação retornados com sucesso",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/Lotação"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Lotação não encontrado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Lotação não encontrado!"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Erro interno ao buscar os lotações",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Erro ao buscar os lotações."
+                                        },
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Detalhes do erro"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Lotação"
+                ],
+                "summary": "Atualiza uma Lotação existente",
+                "description": "Atualiza os dados de uma Lotação com base no ID fornecido.",
+                "operationId": "dddc6da436fd6994dd476a0ae21dabf9",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID da Lotação a ser atualizado",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "description": "Dados para atualização da Lotação",
+                    "required": false,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "pes_id",
+                                    "unid_id",
+                                    "lot_data_lotacao",
+                                    "lot_data_remocao",
+                                    "lot_portaria"
+                                ],
+                                "properties": {
+                                    "pes_id": {
+                                        "type": "integer",
+                                        "example": "1"
+                                    },
+                                    "unid_id": {
+                                        "type": "integer",
+                                        "example": "1"
+                                    },
+                                    "lot_data_lotacao": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2021-08-23"
+                                    },
+                                    "lot_data_remocao": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2024-11-01"
+                                    },
+                                    "lot_portaria": {
+                                        "type": "string",
+                                        "example": "Portaria 123.023/2024"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Lotação atualizado com sucesso",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Lotação atualizado com sucesso!"
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/Lotação"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Erro ao processar a atualização da Lotação",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Erro ao processar a solicitação."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Lotação"
+                ],
+                "summary": "Exclui um Lotação",
+                "description": "Exclui um Lotação do banco de dados com base no ID fornecido.",
+                "operationId": "569f8edf70d00dc5fe9c9984e2a12a21",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID da Lotação a ser excluído",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Lotação excluído com sucesso",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Lotação excluído com sucesso."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Erro ao excluir o Lotação",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Erro ao excluir o Lotação."
+                                        },
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Detalhes do erro."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/pessoas": {
             "get": {
                 "tags": [
@@ -52,7 +898,7 @@
                         }
                     },
                     "404": {
-                        "description": "Nenhum pessoas encontrado",
+                        "description": "Nenhum pessoa encontrado",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -869,6 +1715,76 @@
     },
     "components": {
         "schemas": {
+            "Cidade": {
+                "title": "Cidade",
+                "description": "Modelo de Cidade",
+                "required": [
+                    "cid_nome",
+                    "cid_uf"
+                ],
+                "properties": {
+                    "cid_id": {
+                        "description": "ID do Cidade",
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "cid_nome": {
+                        "description": "Nome da cidade",
+                        "type": "string",
+                        "example": "Camaçari"
+                    },
+                    "cid_uf": {
+                        "description": "Unidade Federativa",
+                        "type": "string",
+                        "example": "BA"
+                    }
+                },
+                "type": "object"
+            },
+            "Endereco": {
+                "title": "Endereço",
+                "description": "Modelo de Endereço",
+                "required": [
+                    "cid_id",
+                    "end_tipo_logradouro",
+                    "end_logradouro",
+                    "end_numero",
+                    "end_bairro"
+                ],
+                "properties": {
+                    "end_id": {
+                        "description": "ID do Endereço",
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "cid_id": {
+                        "description": "ID da Cidade",
+                        "type": "integer",
+                        "example": "1"
+                    },
+                    "end_tipo_logradouro": {
+                        "description": "Descricão do tipo de logradouro",
+                        "type": "string",
+                        "example": "Avenida"
+                    },
+                    "end_logradouro": {
+                        "description": "Descricão do logradouro",
+                        "type": "string",
+                        "example": "Gustavo da Silveira"
+                    },
+                    "end_numero": {
+                        "description": "Número do logradouro",
+                        "type": "integer",
+                        "example": "1000"
+                    },
+                    "end_bairro": {
+                        "description": "Bairro do logradouro",
+                        "type": "string",
+                        "example": "Horto Florestal"
+                    }
+                },
+                "type": "object"
+            },
             "Lotação": {
                 "title": "Lotação",
                 "description": "Modelo de Lotação",
@@ -996,6 +1912,14 @@
         {
             "name": "Unidade",
             "description": "Gerenciamento das unidades"
+        },
+        {
+            "name": "Lotação",
+            "description": "Gerenciamento das lotações"
+        },
+        {
+            "name": "Endereço",
+            "description": "Gerenciamento dos endereços"
         }
     ]
 }

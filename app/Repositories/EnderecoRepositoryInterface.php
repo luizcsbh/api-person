@@ -2,11 +2,11 @@
 
 namespace App\Repositories;
 
-interface LotacaoRepositoryInterface
+interface EnderecoRepositoryInterface
 {
     public function all();
-    public function findById($id);
     public function paginate(int $perPage = 10);
+    public function findById($id);
     public function create(array $data);
     public function update(array $data, $id);
     public function delete($id);

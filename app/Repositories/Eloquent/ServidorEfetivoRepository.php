@@ -23,7 +23,7 @@ class ServidorEfetivoRepository implements ServidorEfetivoRepositoryInterface
 
     public function findById($id)
     {
-        return $this->model->find($id);
+        return $this->model->findOrFail($id);
     }
 
     public function create(array $data)
@@ -44,6 +44,9 @@ class ServidorEfetivoRepository implements ServidorEfetivoRepositoryInterface
         try {
             DB::beginTransaction();
             $servidorEfetivo = $this->model->find($id);
+            if (!$servidorEfetivo) {
+                throw new Exception('Servidor Efetivo não encontrado.');
+            }
             $servidorEfetivo->update($data);
             DB::commit();
             return $servidorEfetivo;
@@ -58,6 +61,9 @@ class ServidorEfetivoRepository implements ServidorEfetivoRepositoryInterface
         try {
             DB::beginTransaction();
             $servidorEfetivo = $this->model->find($id);
+            if (!$servidorEfetivo) {
+                throw new Exception('Servidor Efetivo não encontrado.');
+            }
             $servidorEfetivo->delete();
             DB::commit();
             return $servidorEfetivo;

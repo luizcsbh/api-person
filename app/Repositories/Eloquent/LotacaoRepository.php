@@ -6,6 +6,7 @@ use Exception;
 use App\Models\Lotacao;
 use Illuminate\Support\Facades\DB;
 use App\Repositories\LotacaoRepositoryInterface;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class LotacaoRepository implements LotacaoRepositoryInterface
 {
@@ -18,21 +19,27 @@ class LotacaoRepository implements LotacaoRepositoryInterface
 
     public function all()
     {
-        return $this->model->all();
+        return $this->model->with(['unidade', 'pessoa'])->get();
+    }
+
+    public function paginate(int $perPage = 10): LengthAwarePaginator
+    {
+        return $this->model->with(['unidade','pessoa'])
+            ->paginate($perPage);
     }
 
     public function findById($id)
     {
-        return $this->model->find($id);
+        return $this->model->with(['unidade', 'pessoa'])->findOrFail($id);
     }
 
     public function create(array $data)
     {
         try {
             DB::beginTransaction();
-            $pessoa = $this->model->create($data);
+            $lotacao = $this->model->create($data);
             DB::commit();
-            return $pessoa;
+            return $lotacao;
         } catch (Exception $e) {
             DB::rollBack();
             throw $e;
@@ -43,10 +50,13 @@ class LotacaoRepository implements LotacaoRepositoryInterface
     {
         try {
             DB::beginTransaction();
-            $pessoa = $this->model->find($id);
-            $pessoa->update($data);
+            $lotacao = $this->model->find($id);
+            if(!$lotacao) {
+                throw new Exception('Lotação não encontrada.');
+            }
+            $lotacao->update($data);
             DB::commit();
-            return $pessoa;
+            return $lotacao;
         } catch (Exception $e) {
             DB::rollBack();
             throw $e;
@@ -57,10 +67,13 @@ class LotacaoRepository implements LotacaoRepositoryInterface
     {
         try {
             DB::beginTransaction();
-            $pessoa = $this->model->find($id);
-            $pessoa->delete();
+            $lotacao = $this->model->find($id);
+            if(!$lotacao) {
+                throw new Exception('Lotação não encontrada.');
+            }
+            $lotacao->delete();
             DB::commit();
-            return $pessoa;
+            return $lotacao;
         } catch (Exception $e) {
             DB::rollBack();
             throw $e;

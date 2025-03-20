@@ -24,8 +24,8 @@ class StoreLotacaoRequest extends FormRequest
     public function rules()
     {
         return [
-            'pes_id'=> 'required|integer',
-            'uni_id'=> 'required|integer',
+            'pes_id'=> 'required|exists:pessoas,pes_id',
+            'uni_id'=> 'required|exists:unidades,uni_id',
             'lot_data_lotacao'=> 'required|date',
             'lot_data_remocao'=> 'date',
             'lot_portaria'=> 'required|string|max:100|min:3',
@@ -40,21 +40,21 @@ class StoreLotacaoRequest extends FormRequest
     public function messages()
     {
         return [
-            'pes_id.required' => 'O id da pessoa é obrigatório.',
-            'pes_id.integer' => 'O id da pessoa deve ser um número inteiro.',
+            'pes_id.required' => 'O campo pessoa é obrigatório.',
+            'pes_id.exists' => 'A pessoa selecionada não existe no sistema.',
             
-            'uni_id.required' => 'O id da unidade é obrigatório.',
-            'uni_id.integer' => 'O id da unidade deve ser um número inteiro.',
+            'uni_id.required' => 'O campo unidade é obrigatório.',
+            'uni_id.exists' => 'A unidade selecionada não existe no sistema.',
             
             'lot_data_lotacao.required' => 'A data de lotação é obrigatória.',
             'lot_data_lotacao.date' => 'A data de lotação deve ser uma data válida.',
             
             'lot_data_remocao.date' => 'A data de remoção deve ser uma data válida.',
             
-            'lot_portaria.required' => 'A portaria é obrigatória.',
+            'lot_portaria.required' => 'O número da portaria é obrigatório.',
             'lot_portaria.string' => 'A portaria deve ser um texto.',
-            'lot_portaria.max' => 'A portaria pode ter no máximo 100 caracteres.',
-            'lot_portaria.min' => 'A portaria deve ter no mínimo 3 caracteres.',
+            'lot_portaria.max' => 'A portaria não pode ter mais de 100 caracteres.',
+            'lot_portaria.min' => 'A portaria deve ter pelo menos 3 caracteres.'
         ];
     }
 
