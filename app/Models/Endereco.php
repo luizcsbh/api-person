@@ -27,7 +27,7 @@ class Endereco extends Model
 
     public function unidades()
     {
-        return $this->belongsToMany(Unidade::class, 'unidades_enderecos', 'uni_id', 'end_id')
+        return $this->belongsToMany(Unidade::class, 'unidades_enderecos', 'unid_id', 'end_id')
             ->withTimestamps();
     }
 

@@ -1,6 +1,8 @@
 <?php
 
+use App\Http\Controllers\LotacaoController;
 use App\Http\Controllers\PessoaController;
+use App\Http\Controllers\UnidadeController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -20,3 +22,5 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 Route::resource('/pessoas', PessoaController::class);
+Route::resource('/unidades', UnidadeController::class);
+Route::resource('/lotacoes', LotacaoController::class);

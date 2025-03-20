@@ -26,7 +26,7 @@ use Illuminate\Database\Eloquent\Model;
  *     ),
  *     @OA\Property(
  *         property="pes_data_nascimento",
- *         type="string",
+ *         type="datetime",
  *         description="Data de nascimento",
  *         example="1978-08-23"
  *     ),

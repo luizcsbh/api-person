@@ -28,8 +28,16 @@ use Illuminate\Routing\Controller as BaseController;
  * 
  * @OA\Tag(
  *     name="Pessoas",
- *     description="Gerenciamento de pessoas"
- * )
+ *     description="Gerenciamento das pessoas"
+ * ),
+ * @OA\Tag(
+ *     name="Unidade",
+ *     description="Gerenciamento das unidades"
+ * ),
+  * @OA\Tag(
+ *     name="Lotacao",
+ *     description="Gerenciamento das lotações"
+ * ),
  */
 class Controller extends BaseController
 {

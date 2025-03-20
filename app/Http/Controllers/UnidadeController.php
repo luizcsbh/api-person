@@ -2,53 +2,53 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\Pessoa\StorePessoaRequest;
-use App\Http\Requests\Pessoa\UpdatePessoaRequest;
-use App\Http\Resources\PessoaResource;
-use App\Services\PessoaService;
+use App\Http\Requests\Unidade\StoreUnidadeRequest;
+use App\Http\Requests\Unidade\UpdateUnidadeRequest;
+use App\Http\Resources\UnidadeResource;
+use App\Services\UnidadeService;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
-class PessoaController extends Controller
+class UnidadeController extends Controller
 {
-    protected $pessoaService;
+    protected $unidadeService;
 
-    public function __construct(PessoaService $pessoaService)
+    public function __construct(UnidadeService $unidadeService)
     {
-        $this->pessoaService = $pessoaService;
+        $this->unidadeService = $unidadeService;
     }
 
 /**
      * @OA\Get(
-     *     path="/pessoas",
-     *     summary="Lista todos as pessoas",
-     *     description="Retorna uma lista de pessoas armazenados no banco de dados.",
-     *     tags={"Pessoas"},
+     *     path="/unidades",
+     *     summary="Lista todos as unidades",
+     *     description="Retorna uma lista de unidades armazenados no banco de dados.",
+     *     tags={"Unidade"},
      *     @OA\Response(
      *         response=200,
-     *         description="Lista de pessoas retornada com sucesso",
+     *         description="Lista de unidades retornada com sucesso",
      *         @OA\JsonContent(
      *             type="object",
      *             @OA\Property(property="success", type="boolean", example=true),
-     *             @OA\Property(property="data", type="array", @OA\Items(ref="#/components/schemas/Pessoas"))
+     *             @OA\Property(property="data", type="array", @OA\Items(ref="#/components/schemas/Unidade"))
      *         )
      *     ),
      *     @OA\Response(
      *         response=404,
-     *         description="Nenhum pessoas encontrado",
+     *         description="Nenhum unidades encontrado",
      *         @OA\JsonContent(
      *             type="object",
      *             @OA\Property(property="success", type="boolean", example=false),
-     *             @OA\Property(property="message", type="string", example="Não há pessoas cadastrados!")
+     *             @OA\Property(property="message", type="string", example="Não há unidades cadastrados!")
      *         )
      *     ),
      *     @OA\Response(
      *         response=500,
-     *         description="Erro interno ao buscar os pessoas",
+     *         description="Erro interno ao buscar os unidades",
      *         @OA\JsonContent(
      *             type="object",
      *             @OA\Property(property="success", type="boolean", example=false),
-     *             @OA\Property(property="message", type="string", example="Erro ao buscar os pessoas."),
+     *             @OA\Property(property="message", type="string", example="Erro ao buscar os unidades."),
      *             @OA\Property(property="error", type="string", example="Detalhes do erro")
      *         )
      *     )
@@ -57,23 +57,23 @@ class PessoaController extends Controller
     public function index()
     {
         try {
-            $pessoas = $this->pessoaService->getAllPessoas();
+            $unidades = $this->unidadeService->getAllUnidades();
 
-            if($pessoas->isEmpty()) {
+            if($unidades->isEmpty()) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Nenhuma pessoa encontrada'
+                    'message' => 'Nenhuma unidade encontrada'
                 ], Response::HTTP_NOT_FOUND);
             }
 
             return response()->json([
                 'success' => true,
-                'data' => PessoaResource::collection($pessoas)
+                'data' => UnidadeResource::collection($unidades)
             ], Response::HTTP_OK);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Erro ao buscar pessoas',
+                'message' => 'Erro ao buscar unidades',
                 'error' => $e->getMessage()
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
@@ -81,13 +81,13 @@ class PessoaController extends Controller
 
     /**
      * @OA\Post(
-     *     path="/pessoas",
-     *     summary="Cria uma nova pessoa",
-     *     description="Registra uma nova pessoa no banco de dados.",
-     *     tags={"Pessoas"},
+     *     path="/unidades",
+     *     summary="Cria uma nova unidade",
+     *     description="Registra uma nova unidade no banco de dados.",
+     *     tags={"Unidade"},
      *     @OA\RequestBody(
      *         required=true,
-     *         description="Dados necessários para criar uma nova pessoa",
+     *         description="Dados necessários para criar uma nova unidade",
      *         @OA\JsonContent(
      *             required={"pes_nome","pes_data_nascimento","pes_sexo","pes_mae","pes_pai"},
      *             @OA\Property(property="pes_nome", type="string", example="João da Silva"),
@@ -99,40 +99,40 @@ class PessoaController extends Controller
      *     ),
      *     @OA\Response(
      *         response=201,
-     *         description="Pessoa criado com sucesso",
+     *         description="Unidade criado com sucesso",
      *         @OA\JsonContent(
      *             type="object",
      *             @OA\Property(property="success", type="boolean", example=true),
-     *             @OA\Property(property="message", type="string", example="Pessoa criado com sucesso."),
-     *             @OA\Property(property="data", ref="#/components/schemas/Pessoas")
+     *             @OA\Property(property="message", type="string", example="Unidade criado com sucesso."),
+     *             @OA\Property(property="data", ref="#/components/schemas/Unidade")
      *         )
      *     ),
      *     @OA\Response(
      *         response=500,
-     *         description="Erro ao criar o pessoa",
+     *         description="Erro ao criar o unidade",
      *         @OA\JsonContent(
      *             type="object",
-     *             @OA\Property(property="error", type="string", example="Erro ao criar o pessoa.")
+     *             @OA\Property(property="error", type="string", example="Erro ao criar o unidade.")
      *         )
      *     )
      * )
      */
-    public function store(StorePessoaRequest $request)
+    public function store(StoreUnidadeRequest $request)
     {
         try{
 
             $validateData = $request->validated();
-            $pessoa = $this->pessoaService->createPessoa($validateData);
+            $unidade = $this->unidadeService->createUnidade($validateData);
 
             return response()->json([
                 'success' => true,
-                'message' => 'Pessoa criada com sucesso',
-                'data' => $pessoa
+                'message' => 'Unidade criada com sucesso',
+                'data' => $unidade
             ], Response::HTTP_CREATED);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Erro ao criar pessoa',
+                'message' => 'Erro ao criar unidade',
                 'error' => $e->getMessage()
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
@@ -140,42 +140,42 @@ class PessoaController extends Controller
 
     /**
      * @OA\Get(
-     *     path="/pessoas/{id}",
-     *     summary="Obtém os detalhes de uma pessoa",
-     *     description="Retorna os detalhes de uma pessoa em específico pelo ID.",
-     *     tags={"Pessoas"},
+     *     path="/unidades/{id}",
+     *     summary="Obtém os detalhes de uma unidade",
+     *     description="Retorna os detalhes de uma unidade em específico pelo ID.",
+     *     tags={"Unidade"},
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
      *         required=true,
-     *         description="ID da pessoa",
+     *         description="ID da unidade",
      *         @OA\Schema(type="integer", example=1)
      *     ),
      *     @OA\Response(
      *         response=200,
-     *         description="Detalhes da pessoa retornados com sucesso",
+     *         description="Detalhes da unidade retornados com sucesso",
      *         @OA\JsonContent(
      *             type="object",
      *             @OA\Property(property="success", type="boolean", example=true),
-     *             @OA\Property(property="data", ref="#/components/schemas/Pessoas")
+     *             @OA\Property(property="data", ref="#/components/schemas/Unidade")
      *         )
      *     ),
      *     @OA\Response(
      *         response=404,
-     *         description="Pessoa não encontrado",
+     *         description="Unidade não encontrado",
      *         @OA\JsonContent(
      *             type="object",
      *             @OA\Property(property="success", type="boolean", example=false),
-     *             @OA\Property(property="message", type="string", example="Pessoa não encontrado!")
+     *             @OA\Property(property="message", type="string", example="Unidade não encontrado!")
      *         )
      *     ),
      *     @OA\Response(
      *         response=500,
-     *         description="Erro interno ao buscar os pessoas",
+     *         description="Erro interno ao buscar os unidades",
      *         @OA\JsonContent(
      *             type="object",
      *             @OA\Property(property="success", type="boolean", example=false),
-     *             @OA\Property(property="message", type="string", example="Erro ao buscar os pessoas."),
+     *             @OA\Property(property="message", type="string", example="Erro ao buscar os unidades."),
      *             @OA\Property(property="error", type="string", example="Detalhes do erro")
      *         )
      *     )
@@ -185,23 +185,23 @@ class PessoaController extends Controller
     {
         try {
 
-            $pessoa = $this->pessoaService->getPessoaById($id);
+            $unidade = $this->unidadeService->getUnidadeById($id);
 
-            if(!$pessoa) {
+            if(!$unidade) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Pessoa não encontrada'
+                    'message' => 'Unidade não encontrada'
                 ], Response::HTTP_NOT_FOUND);
             }
 
             return response()->json([
                 'success' => true,
-                'data' => new PessoaResource($pessoa)
+                'data' => new UnidadeResource($unidade)
             ], Response::HTTP_OK);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Erro ao buscar pessoa',
+                'message' => 'Erro ao buscar unidade',
                 'error' => $e->getMessage()
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
@@ -209,20 +209,20 @@ class PessoaController extends Controller
 
     /**
      * @OA\Put(
-     *     path="/pessoas/{id}",
-     *     summary="Atualiza uma pessoa existente",
-     *     description="Atualiza os dados de uma pessoa com base no ID fornecido.",
-     *     tags={"Pessoas"},
+     *     path="/unidades/{id}",
+     *     summary="Atualiza uma unidade existente",
+     *     description="Atualiza os dados de uma unidade com base no ID fornecido.",
+     *     tags={"Unidade"},
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
      *         required=true,
-     *         description="ID da pessoa a ser atualizado",
+     *         description="ID da unidade a ser atualizado",
      *         @OA\Schema(type="integer", example=1)
      *     ),
      *     @OA\RequestBody(
      *         required=false,
-     *         description="Dados para atualização da pessoa",
+     *         description="Dados para atualização da unidade",
      *         @OA\JsonContent(
      *             required={"pes_nome","pes_data_nascimento","pes_sexo","pes_mae","pes_pai"},
      *             @OA\Property(property="pes_nome", type="string", example="João da Silva"),
@@ -234,17 +234,17 @@ class PessoaController extends Controller
      *     ),
      *     @OA\Response(
      *         response=200,
-     *         description="Pessoa atualizado com sucesso",
+     *         description="Unidade atualizado com sucesso",
      *         @OA\JsonContent(
      *             type="object",
      *             @OA\Property(property="success", type="boolean", example=true),
-     *             @OA\Property(property="message", type="string", example="Pessoa atualizado com sucesso!"),
-     *             @OA\Property(property="data", ref="#/components/schemas/Pessoas")
+     *             @OA\Property(property="message", type="string", example="Unidade atualizado com sucesso!"),
+     *             @OA\Property(property="data", ref="#/components/schemas/Unidade")
      *         )
      *     ),
      *     @OA\Response(
      *         response=500,
-     *         description="Erro ao processar a atualização da pessoa",
+     *         description="Erro ao processar a atualização da unidade",
      *         @OA\JsonContent(
      *             type="object",
      *             @OA\Property(property="error", type="string", example="Erro ao processar a solicitação.")
@@ -252,22 +252,22 @@ class PessoaController extends Controller
      *     )
      * )
      */ 
-    public function update(UpdatePessoaRequest $request, string $id)
+    public function update(UpdateUnidadeRequest $request, string $id)
     {
         try {
 
             $validateData = $request->validated();
-            $pessoa = $this->pessoaService->updatePessoa($validateData, $id);
+            $unidade = $this->unidadeService->updateUnidade($validateData, $id);
 
             return response()->json([
                 'success' => true,
-                'message' => 'Pessoa atualizada com sucesso',
-                'data' => new PessoaResource($pessoa)
+                'message' => 'Unidade atualizada com sucesso',
+                'data' => new UnidadeResource($unidade)
             ], Response::HTTP_OK);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Erro ao atualizar pessoa',
+                'message' => 'Erro ao atualizar unidade',
                 'error' => $e->getMessage()
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
@@ -275,33 +275,33 @@ class PessoaController extends Controller
 
     /**
      * @OA\Delete(
-     *     path="/pessoas/{id}",
-     *     summary="Exclui um pessoa",
-     *     description="Exclui um pessoa do banco de dados com base no ID fornecido.",
-     *     tags={"Pessoas"},
+     *     path="/unidades/{id}",
+     *     summary="Exclui um unidade",
+     *     description="Exclui um unidade do banco de dados com base no ID fornecido.",
+     *     tags={"Unidade"},
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
      *         required=true,
-     *         description="ID da pessoa a ser excluído",
+     *         description="ID da unidade a ser excluído",
      *         @OA\Schema(type="integer", example=1)
      *     ),
      *     @OA\Response(
      *         response=200,
-     *         description="Pessoa excluído com sucesso",
+     *         description="Unidade excluído com sucesso",
      *         @OA\JsonContent(
      *             type="object",
      *             @OA\Property(property="success", type="boolean", example=true),
-     *             @OA\Property(property="message", type="string", example="Pessoa excluído com sucesso.")
+     *             @OA\Property(property="message", type="string", example="Unidade excluído com sucesso.")
      *         )
      *     ),
      *     @OA\Response(
      *         response=500,
-     *         description="Erro ao excluir o pessoa",
+     *         description="Erro ao excluir o unidade",
      *         @OA\JsonContent(
      *             type="object",
      *             @OA\Property(property="success", type="boolean", example=false),
-     *             @OA\Property(property="message", type="string", example="Erro ao excluir o pessoa."),
+     *             @OA\Property(property="message", type="string", example="Erro ao excluir o unidade."),
      *             @OA\Property(property="error", type="string", example="Detalhes do erro.")
      *         )
      *     )
@@ -311,16 +311,16 @@ class PessoaController extends Controller
     {
         try{
             
-            $this->pessoaService->deletePessoa($id);
+            $this->unidadeService->deleteUnidade($id);
 
             return response()->json([
                 'success' => true,
-                'message' => 'Pessoa excluída com sucesso'
+                'message' => 'Unidade excluída com sucesso'
             ], Response::HTTP_OK);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Erro ao deletar pessoa',
+                'message' => 'Erro ao deletar unidade',
                 'error' => $e->getMessage()
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }

@@ -124,7 +124,7 @@
                                     },
                                     "pes_data_nascimento": {
                                         "type": "string",
-                                        "format": "date",
+                                        "format": "date-time",
                                         "example": "1978-08-23"
                                     },
                                     "pes_sexo": {
@@ -442,10 +442,479 @@
                     }
                 }
             }
+        },
+        "/unidades": {
+            "get": {
+                "tags": [
+                    "Unidade"
+                ],
+                "summary": "Lista todos as unidades",
+                "description": "Retorna uma lista de unidades armazenados no banco de dados.",
+                "operationId": "ac4d45815202ccec305966db0d0b3fcc",
+                "responses": {
+                    "200": {
+                        "description": "Lista de unidades retornada com sucesso",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/Unidade"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Nenhum unidades encontrado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Não há unidades cadastrados!"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Erro interno ao buscar os unidades",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Erro ao buscar os unidades."
+                                        },
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Detalhes do erro"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Unidade"
+                ],
+                "summary": "Cria uma nova unidade",
+                "description": "Registra uma nova unidade no banco de dados.",
+                "operationId": "30456808cb280227b9333f98ee71c6b4",
+                "requestBody": {
+                    "description": "Dados necessários para criar uma nova unidade",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "pes_nome",
+                                    "pes_data_nascimento",
+                                    "pes_sexo",
+                                    "pes_mae",
+                                    "pes_pai"
+                                ],
+                                "properties": {
+                                    "pes_nome": {
+                                        "type": "string",
+                                        "example": "João da Silva"
+                                    },
+                                    "pes_data_nascimento": {
+                                        "type": "string",
+                                        "format": "date-time",
+                                        "example": "1978-08-23"
+                                    },
+                                    "pes_sexo": {
+                                        "type": "string",
+                                        "example": "Masculino"
+                                    },
+                                    "pes_mae": {
+                                        "type": "string",
+                                        "example": "Maria Aparecida da Silva"
+                                    },
+                                    "pes_pai": {
+                                        "type": "string",
+                                        "example": "Cícero Joaquim da Silva"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Unidade criado com sucesso",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unidade criado com sucesso."
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/Unidade"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Erro ao criar o unidade",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Erro ao criar o unidade."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/unidades/{id}": {
+            "get": {
+                "tags": [
+                    "Unidade"
+                ],
+                "summary": "Obtém os detalhes de uma unidade",
+                "description": "Retorna os detalhes de uma unidade em específico pelo ID.",
+                "operationId": "1d7b918ba11c60c027390b5e59bc61b8",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID da unidade",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Detalhes da unidade retornados com sucesso",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/Unidade"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Unidade não encontrado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unidade não encontrado!"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Erro interno ao buscar os unidades",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Erro ao buscar os unidades."
+                                        },
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Detalhes do erro"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Unidade"
+                ],
+                "summary": "Atualiza uma unidade existente",
+                "description": "Atualiza os dados de uma unidade com base no ID fornecido.",
+                "operationId": "00d54059afb6a4e53f45c760af9e6026",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID da unidade a ser atualizado",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "description": "Dados para atualização da unidade",
+                    "required": false,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "pes_nome",
+                                    "pes_data_nascimento",
+                                    "pes_sexo",
+                                    "pes_mae",
+                                    "pes_pai"
+                                ],
+                                "properties": {
+                                    "pes_nome": {
+                                        "type": "string",
+                                        "example": "João da Silva"
+                                    },
+                                    "pes_data_nascimento": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "1978-08-23"
+                                    },
+                                    "pes_sexo": {
+                                        "type": "string",
+                                        "example": "Masculino"
+                                    },
+                                    "pes_mae": {
+                                        "type": "string",
+                                        "example": "Maria Aparecida da Silva"
+                                    },
+                                    "pes_pai": {
+                                        "type": "string",
+                                        "example": "Cícero Joaquim da Silva"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Unidade atualizado com sucesso",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unidade atualizado com sucesso!"
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/Unidade"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Erro ao processar a atualização da unidade",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Erro ao processar a solicitação."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Unidade"
+                ],
+                "summary": "Exclui um unidade",
+                "description": "Exclui um unidade do banco de dados com base no ID fornecido.",
+                "operationId": "efb6a548f741ea9aaf450b8481998ce7",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID da unidade a ser excluído",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Unidade excluído com sucesso",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unidade excluído com sucesso."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Erro ao excluir o unidade",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Erro ao excluir o unidade."
+                                        },
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Detalhes do erro."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
     },
     "components": {
         "schemas": {
+            "Lotação": {
+                "title": "Lotação",
+                "description": "Modelo de Lotação",
+                "required": [
+                    "pes_id",
+                    "unid_id",
+                    "lot_data_lotacao",
+                    "lot_data_remocao",
+                    "lot_portaria"
+                ],
+                "properties": {
+                    "lot_id": {
+                        "description": "ID do Lotação",
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "pes_id": {
+                        "description": "ID da Pessoa",
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "unid_id": {
+                        "description": "ID da Unidade",
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "lot_data_lotacao": {
+                        "description": "Data da lotação",
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2021-05-01"
+                    },
+                    "lot_data_remocao": {
+                        "description": "Datada remoção",
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-10-15"
+                    },
+                    "lot_portaria": {
+                        "description": "Portaria",
+                        "type": "string",
+                        "example": "Portaria 23.0001/24"
+                    }
+                },
+                "type": "object"
+            },
             "Pessoas": {
                 "title": "Pessoa",
                 "description": "Modelo de Pessoa",
@@ -470,6 +939,7 @@
                     "pes_data_nascimento": {
                         "description": "Data de nascimento",
                         "type": "string",
+                        "format": "date-time",
                         "example": "1978-08-23"
                     },
                     "pes_sexo": {
@@ -489,13 +959,43 @@
                     }
                 },
                 "type": "object"
+            },
+            "Unidade": {
+                "title": "Unidade",
+                "description": "Modelo da Unidade",
+                "required": [
+                    "unid_nome",
+                    "unid_sigla"
+                ],
+                "properties": {
+                    "unid_id": {
+                        "description": "ID da Unidade",
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "unid_nome": {
+                        "description": "Nome da unidade",
+                        "type": "string",
+                        "example": "Secretária de Planejamento"
+                    },
+                    "unid_sigla": {
+                        "description": "Sigla da unidade",
+                        "type": "string",
+                        "example": "SEPLAG"
+                    }
+                },
+                "type": "object"
             }
         }
     },
     "tags": [
         {
             "name": "Pessoas",
-            "description": "Gerenciamento de pessoas"
+            "description": "Gerenciamento das pessoas"
+        },
+        {
+            "name": "Unidade",
+            "description": "Gerenciamento das unidades"
         }
     ]
 }

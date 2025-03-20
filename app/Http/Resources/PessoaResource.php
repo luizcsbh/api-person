@@ -4,17 +4,8 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 
-/**
- * Classe de recurso para Instituição
- */
 class PessoaResource extends JsonResource
 {
-    /**
-     * Transforma o recurso em um array.
-     *
-     * @param  \Illuminate\Http\Request  $request Requisição HTTP
-     * @return array|\Illuminate\Contracts\Support\Arrayable|\JsonSerializable Retorna os dados da instituição
-     */
     public function toArray($request)
     {
         return [
