@@ -31,6 +31,10 @@ use Illuminate\Routing\Controller as BaseController;
  *     description="Gerenciamento das pessoas"
  * ),
  * @OA\Tag(
+ *     name="Servidor Efetivo",
+ *     description="Gerenciamento dos servidores efetivos"
+ * ),
+ * @OA\Tag(
  *     name="Unidade",
  *     description="Gerenciamento das unidades"
  * ),
@@ -38,7 +42,7 @@ use Illuminate\Routing\Controller as BaseController;
  *     name="Lotação",
  *     description="Gerenciamento das lotações"
  * ),
- *  * @OA\Tag(
+ * @OA\Tag(
  *     name="Endereço",
  *     description="Gerenciamento dos endereços"
  * ),

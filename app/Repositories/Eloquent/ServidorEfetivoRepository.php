@@ -6,6 +6,7 @@ use Exception;
 use App\Models\ServidorEfetivo;
 use Illuminate\Support\Facades\DB;
 use App\Repositories\ServidorEfetivoRepositoryInterface;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class ServidorEfetivoRepository implements ServidorEfetivoRepositoryInterface
 {
@@ -18,12 +19,18 @@ class ServidorEfetivoRepository implements ServidorEfetivoRepositoryInterface
 
     public function all()
     {
-        return $this->model->all();
+        return $this->model->with('pessoa')->get();
+    }
+
+    public function paginate(int $perPage = 10): LengthAwarePaginator
+    {
+        return $this->model->with(['pessoa'])
+            ->paginate($perPage);
     }
 
     public function findById($id)
     {
-        return $this->model->findOrFail($id);
+        return $this->model->with('pessoa')->where('pes_id',$id)->first();
     }
 
     public function create(array $data)
@@ -72,4 +79,6 @@ class ServidorEfetivoRepository implements ServidorEfetivoRepositoryInterface
             throw $e;
         }
     }
+
+
 }

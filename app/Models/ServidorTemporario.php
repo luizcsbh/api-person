@@ -11,14 +11,15 @@ class ServidorTemporario extends Model
 
     protected $table = 'servidores_temporarios';
     
-    protected $fillable = [
-        'pes_id',
-        'st_data_admissao',
-        'st_data_demissao',
-    ];
+    protected $fillable = ['pes_id','st_data_admissao','st_data_demissao' ];
 
     public function pessoa()
     {
-        return $this->belongsTo(Pessoas::class, 'pes_id', 'pes_id');
+        return $this->belongsTo(Pessoas::class, 'pes_id');
+    }
+
+    public function lotacoes()
+    {
+        return $this->hasMany(Lotacao::class, 'pes_id');
     }
 }

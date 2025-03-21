@@ -958,6 +958,7 @@
                             "schema": {
                                 "required": [
                                     "pes_nome",
+                                    "pes_cpf",
                                     "pes_data_nascimento",
                                     "pes_sexo",
                                     "pes_mae",
@@ -967,6 +968,10 @@
                                     "pes_nome": {
                                         "type": "string",
                                         "example": "João da Silva"
+                                    },
+                                    "pes_cpf": {
+                                        "type": "string",
+                                        "example": "111.222.333-44"
                                     },
                                     "pes_data_nascimento": {
                                         "type": "string",
@@ -1147,6 +1152,7 @@
                             "schema": {
                                 "required": [
                                     "pes_nome",
+                                    "pes_cpf",
                                     "pes_data_nascimento",
                                     "pes_sexo",
                                     "pes_mae",
@@ -1156,6 +1162,10 @@
                                     "pes_nome": {
                                         "type": "string",
                                         "example": "João da Silva"
+                                    },
+                                    "pes_cpf": {
+                                        "type": "string",
+                                        "example": "111.222.333-44"
                                     },
                                     "pes_data_nascimento": {
                                         "type": "string",
@@ -1275,6 +1285,399 @@
                                         "message": {
                                             "type": "string",
                                             "example": "Erro ao excluir o pessoa."
+                                        },
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Detalhes do erro."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/servidores-efetivos": {
+            "get": {
+                "tags": [
+                    "Servidor Efetivo"
+                ],
+                "summary": "Lista todos as servidores efetivos",
+                "description": "Retorna uma lista de servidores efetivos armazenados no banco de dados.",
+                "operationId": "52e4ce496fb4d158b46016deec180806",
+                "responses": {
+                    "200": {
+                        "description": "Lista de servidores efetivos retornada com sucesso",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/ServidorEfetivo"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Nenhum servidor efetivo encontrado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Não há servidores efetivos cadastrados!"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Erro interno ao buscar os servidores efetivos",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Erro ao buscar os servidores efetivos."
+                                        },
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Detalhes do erro"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Servidor Efetivo"
+                ],
+                "summary": "Cria uma nova servidor efetivo",
+                "description": "Registra um novo servidor efetivo no banco de dados.",
+                "operationId": "db3aca000330b5d6d5334b33a2b8f38c",
+                "requestBody": {
+                    "description": "Dados necessários para criar um novo servidor efetivo",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "pes_id",
+                                    "se_matricula"
+                                ],
+                                "properties": {
+                                    "pes_id": {
+                                        "type": "integer",
+                                        "example": "2"
+                                    },
+                                    "se_matricula": {
+                                        "type": "string",
+                                        "example": "2003456788467"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Servidor Efetivo criado com sucesso",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Servidor Efetivo criado com sucesso."
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/ServidorEfetivo"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Erro ao criar o servidor efetivo",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Erro ao criar o servidor efetivo."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/servidores efetivos/{id}": {
+            "get": {
+                "tags": [
+                    "Servidor Efetivo"
+                ],
+                "summary": "Obtém os detalhes de um servidor efetivo",
+                "description": "Retorna os detalhes de um servidor efetivo em específico pelo ID.",
+                "operationId": "9dfb3665cd4f5040afe1e5d805088b45",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID da servidor efetivo",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Detalhes da servidor efetivo retornados com sucesso",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/ServidorEfetivo"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Servidor Efetivo não encontrado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Servidor Efetivo não encontrado!"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Erro interno ao buscar os servidores efetivos",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Erro ao buscar os servidores efetivos."
+                                        },
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Detalhes do erro"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/servidores-efetivos/{id}": {
+            "put": {
+                "tags": [
+                    "Servidor Efetivo"
+                ],
+                "summary": "Atualiza um servidor efetivo existente",
+                "description": "Atualiza os dados de uma servidor efetivo com base no ID fornecido.",
+                "operationId": "6a0d14a7c97f6bc6ea869a121090774d",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID da servidor efetivo a ser atualizado",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "description": "Dados para atualização da servidor efetivo",
+                    "required": false,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "pes_id",
+                                    "se_matricula"
+                                ],
+                                "properties": {
+                                    "pes_id": {
+                                        "type": "integer",
+                                        "example": "2"
+                                    },
+                                    "se_matricula": {
+                                        "type": "string",
+                                        "example": "2003456788467"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Servidor Efetivo atualizado com sucesso",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Servidor Efetivo atualizado com sucesso!"
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/ServidorEfetivo"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Erro ao processar a atualização da servidor efetivo",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Erro ao processar a solicitação."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Servidor Efetivo"
+                ],
+                "summary": "Exclui um servidor efetivo",
+                "description": "Exclui um servidor efetivo do banco de dados com base no ID fornecido.",
+                "operationId": "7769253db1ca2a0f2705f4d8cb7b5938",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID da servidor efetivo a ser excluído",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Pessoa excluído com sucesso",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Pessoa excluído com sucesso."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Erro ao excluir o servidor efetivo",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Erro ao excluir o servidor efetivo."
                                         },
                                         "error": {
                                             "type": "string",
@@ -1836,6 +2239,7 @@
                 "description": "Modelo de Pessoa",
                 "required": [
                     "pes_nome",
+                    "pes_cpf",
                     "pes_data_nascimento",
                     "pes_sexo",
                     "pes_mae",
@@ -1851,6 +2255,11 @@
                         "description": "Nome da pessoa",
                         "type": "string",
                         "example": "João da Silva"
+                    },
+                    "pes_cpf": {
+                        "description": "CPF da pessoa",
+                        "type": "string",
+                        "example": "111.222.333-44"
                     },
                     "pes_data_nascimento": {
                         "description": "Data de nascimento",
@@ -1872,6 +2281,28 @@
                         "description": "Nome da pai",
                         "type": "string",
                         "example": "Cícero Joaquim da Silva"
+                    }
+                },
+                "type": "object"
+            },
+            "ServidorEfetivo": {
+                "title": "Servidor Efetivo",
+                "description": "Modelo de Servidor Efetivo",
+                "required": [
+                    "pes_id",
+                    "se_matricula"
+                ],
+                "properties": {
+                    "pes_id": {
+                        "description": "ID da pessoa",
+                        "type": "integer",
+                        "example": "2"
+                    },
+                    "se_matricula": {
+                        "description": "Matricula do Servidor",
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2003456788467"
                     }
                 },
                 "type": "object"
@@ -1908,6 +2339,10 @@
         {
             "name": "Pessoas",
             "description": "Gerenciamento das pessoas"
+        },
+        {
+            "name": "Servidor Efetivo",
+            "description": "Gerenciamento dos servidores efetivos"
         },
         {
             "name": "Unidade",

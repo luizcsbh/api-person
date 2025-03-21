@@ -12,12 +12,11 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('servidores_efetivos', function (Blueprint $table) {
-            $table->foreignId('pes_id')
-                ->constrained('pessoas','pes_id')
-                ->onDelete('cascade');
-
-            $table->string('se_matricula',20)->unique();
+            $table->unsignedBigInteger('pes_id')->primary(); // ← Define pes_id como PK
+            $table->string('se_matricula', 20)->unique();
             $table->timestamps();
+            
+            $table->foreign('pes_id')->references('pes_id')->on('pessoas');
         });
     }
 

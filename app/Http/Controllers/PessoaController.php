@@ -2,8 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\Pessoa\StorePessoaRequest;
-use App\Http\Requests\Pessoa\UpdatePessoaRequest;
+use App\Http\Requests\Pessoa\PessoaRequest;
 use App\Http\Resources\PessoaResource;
 use App\Services\PessoaService;
 use Illuminate\Http\Response;
@@ -18,7 +17,7 @@ class PessoaController extends Controller
         $this->pessoaService = $pessoaService;
     }
 
-/**
+    /**
      * @OA\Get(
      *     path="/pessoas",
      *     summary="Lista todos as pessoas",
@@ -93,8 +92,9 @@ class PessoaController extends Controller
      *         required=true,
      *         description="Dados necessários para criar uma nova pessoa",
      *         @OA\JsonContent(
-     *             required={"pes_nome","pes_data_nascimento","pes_sexo","pes_mae","pes_pai"},
+     *             required={"pes_nome","pes_cpf","pes_data_nascimento","pes_sexo","pes_mae","pes_pai"},
      *             @OA\Property(property="pes_nome", type="string", example="João da Silva"),
+     *             @OA\Property(property="pes_cpf", type="string", example="111.222.333-44"),
      *             @OA\Property(property="pes_data_nascimento", type="datetime", example="1978-08-23"),
      *             @OA\Property(property="pes_sexo", type="string", example="Masculino"),
      *             @OA\Property(property="pes_mae", type="string", example="Maria Aparecida da Silva"),
@@ -121,7 +121,7 @@ class PessoaController extends Controller
      *     )
      * )
      */
-    public function store(StorePessoaRequest $request)
+    public function store(PessoaRequest $request)
     {
         try{
 
@@ -228,8 +228,9 @@ class PessoaController extends Controller
      *         required=false,
      *         description="Dados para atualização da pessoa",
      *         @OA\JsonContent(
-     *             required={"pes_nome","pes_data_nascimento","pes_sexo","pes_mae","pes_pai"},
+     *             required={"pes_nome","pes_cpf","pes_data_nascimento","pes_sexo","pes_mae","pes_pai"},
      *             @OA\Property(property="pes_nome", type="string", example="João da Silva"),
+      *            @OA\Property(property="pes_cpf", type="string", example="111.222.333-44"),
      *             @OA\Property(property="pes_data_nascimento", type="date", example="1978-08-23"),
      *             @OA\Property(property="pes_sexo", type="string", example="Masculino"),
      *             @OA\Property(property="pes_mae", type="string", example="Maria Aparecida da Silva"),
@@ -256,7 +257,7 @@ class PessoaController extends Controller
      *     )
      * )
      */ 
-    public function update(UpdatePessoaRequest $request, string $id)
+    public function update(PessoaRequest $request, string $id)
     {
         try {
 

@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Model;
  *     type="object",
  *     title="Pessoa",
  *     description="Modelo de Pessoa",
- *     required={"pes_nome","pes_data_nascimento","pes_sexo","pes_mae","pes_pai"},
+ *     required={"pes_nome","pes_cpf","pes_data_nascimento","pes_sexo","pes_mae","pes_pai"},
  *     @OA\Property(
  *         property="pes_id",
  *         type="integer",
@@ -23,6 +23,12 @@ use Illuminate\Database\Eloquent\Model;
  *         type="string",
  *         description="Nome da pessoa",
  *         example="João da Silva"
+ *     ),
+ *     @OA\Property(
+ *         property="pes_cpf",
+ *         type="string",
+ *         description="CPF da pessoa",
+ *         example="111.222.333-44"
  *     ),
  *     @OA\Property(
  *         property="pes_data_nascimento",
@@ -59,6 +65,7 @@ class Pessoas extends Model
 
     protected $fillable = [
         'pes_nome',
+        'pes_cpf',
         'pes_data_nascimento',
         'pes_sexo',
         'pes_mae',

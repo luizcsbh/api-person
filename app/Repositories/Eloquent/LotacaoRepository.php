@@ -30,7 +30,7 @@ class LotacaoRepository implements LotacaoRepositoryInterface
 
     public function findById($id)
     {
-        return $this->model->with(['unidade', 'pessoa'])->findOrFail($id);
+        return $this->model->with(['unidade', 'pessoa'])->find($id);
     }
 
     public function create(array $data)

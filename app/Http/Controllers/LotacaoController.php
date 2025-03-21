@@ -2,8 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\Lotacao\StoreLotacaoRequest;
-use App\Http\Requests\Lotacao\UpdateLotacaoRequest;
+use App\Http\Requests\Lotacao\LotacaoRequest;
 use App\Http\Resources\LotacaoResource;
 use App\Services\LotacaoService;
 use Illuminate\Http\Response;
@@ -18,7 +17,7 @@ class LotacaoController extends Controller
         $this->lotacaoService = $lotacaoService;
     }
 
-/**
+    /**
      * @OA\Get(
      *     path="/lotacoes",
      *     summary="Lista todos as lotações",
@@ -121,7 +120,7 @@ class LotacaoController extends Controller
      *     )
      * )
      */
-    public function store(StoreLotacaoRequest $request)
+    public function store(LotacaoRequest $request)
     {
         try{
 
@@ -256,7 +255,7 @@ class LotacaoController extends Controller
      *     )
      * )
      */ 
-    public function update(UpdateLotacaoRequest $request, string $id)
+    public function update(LotacaoRequest $request, string $id)
     {
         try {
 

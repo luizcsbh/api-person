@@ -30,7 +30,7 @@ class EnderecoRepository implements EnderecoRepositoryInterface
 
     public function findById($id)
     {
-        return $this->model->findOrFail($id);
+        return $this->model->find($id);
     }
 
     public function create(array $data)

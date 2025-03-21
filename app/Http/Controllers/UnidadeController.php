@@ -2,8 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\Unidade\StoreUnidadeRequest;
-use App\Http\Requests\Unidade\UpdateUnidadeRequest;
+use App\Http\Requests\Unidade\UnidadeRequest;
 use App\Http\Resources\UnidadeResource;
 use App\Services\UnidadeService;
 use Illuminate\Http\Response;
@@ -17,7 +16,7 @@ class UnidadeController extends Controller
         $this->unidadeService = $unidadeService;
     }
 
-/**
+    /**
      * @OA\Get(
      *     path="/unidades",
      *     summary="Lista todos as unidades",
@@ -120,7 +119,7 @@ class UnidadeController extends Controller
      *     )
      * )
      */
-    public function store(StoreUnidadeRequest $request)
+    public function store(UnidadeRequest $request)
     {
         try{
 
@@ -255,7 +254,7 @@ class UnidadeController extends Controller
      *     )
      * )
      */ 
-    public function update(UpdateUnidadeRequest $request, string $id)
+    public function update(UnidadeRequest $request, string $id)
     {
         try {
 

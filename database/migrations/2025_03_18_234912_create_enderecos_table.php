@@ -14,13 +14,14 @@ return new class extends Migration
         Schema::create('enderecos', function (Blueprint $table) {
             $table->id('end_id');
 
-            $table->foreignId('end_cid_id')
+            $table->foreignId('cid_id')
                 ->constrained('cidades','cid_id')
                 ->onDelete('cascade');
                 
             $table->string('end_tipo_logradouro', 50)->index();
             $table->string('end_logradouro', 200)->index();
             $table->string('end_numero', 20)->index();
+            $table->string('end_complemento',100)->nullable();
             $table->string('end_bairro', 100)->index();
             $table->timestamps();
         });

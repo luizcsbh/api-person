@@ -2,8 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\Endereco\StoreEnderecoRequest;
-use App\Http\Requests\Endereco\UpdateEnderecoRequest;
+use App\Http\Requests\Endereco\EnderecoRequest;
 use App\Http\Resources\EnderecoResource;
 use App\Services\EnderecoService;
 use Illuminate\Http\Response;
@@ -96,8 +95,9 @@ class EnderecoController extends Controller
      *             required={"cid_id","end_tipo_logradouro","end_logradouro","end_numero","end_bairro"},
      *             @OA\Property(property="cid_id", type="integer", example="1"),
      *             @OA\Property(property="end_tipo_logradouro", type="string", example="Avenida"),
-     *             @OA\Property(property="end_logradouro", type="string", example="Gustavo da Silveira"),
+     *             @OA\Property(property="end_logradouro", type="string", example="Silviano Brandão"),
      *             @OA\Property(property="end_numero", type="integer", example="1000"),
+     *             @OA\Property(property="end_complemento", type="string", example="Bloco E, 50 apartamento 303"),
      *             @OA\Property(property="end_bairro", type="string", example="Horto Florestal")
      *         )
      *     ),
@@ -121,7 +121,7 @@ class EnderecoController extends Controller
      *     )
      * )
      */
-    public function store(StoreEnderecoRequest $request)
+    public function store(EnderecoRequest $request)
     {
         try{
 
@@ -228,11 +228,12 @@ class EnderecoController extends Controller
      *         required=false,
      *         description="Dados para atualização da Endereco",
      *         @OA\JsonContent(
-     *             required={"cid_id","end_tipo_logradouro","end_logradouro","end_numero","end_bairro"},
+     *             required={"cid_id","end_tipo_logradouro","end_logradouro","end_numero","end_complemento","end_bairro"},
      *             @OA\Property(property="cid_id", type="integer", example="1"),
      *             @OA\Property(property="end_tipo_logradouro", type="string", example="Avenida"),
      *             @OA\Property(property="end_logradouro", type="string", example="Gustavo da Silveira"),
      *             @OA\Property(property="end_numero", type="integer", example="1000"),
+     *             @OA\Property(property="end_complemento", type="string", example="Bloco E, 50 apartamento 303"),
      *             @OA\Property(property="end_bairro", type="string", example="Horto Florestal")
      *         )
      *     ),
@@ -256,7 +257,7 @@ class EnderecoController extends Controller
      *     )
      * )
      */ 
-    public function update(UpdateEnderecoRequest $request, string $id)
+    public function update(EnderecoRequest $request, string $id)
     {
         try {
 

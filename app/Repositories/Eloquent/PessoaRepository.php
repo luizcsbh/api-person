@@ -24,13 +24,13 @@ class PessoaRepository implements PessoaRepositoryInterface
 
     public function paginate(int $perPage = 10): LengthAwarePaginator
     {
-        return $this->model->with(['enderecos','lotacoes'])
+        return $this->model->with(['enderecos','lotacoes','servidorEfetivo'])
             ->paginate($perPage);
     }
 
     public function findById($id)
     {
-        return $this->model->findOrFail($id);
+        return $this->model->find($id);
     }
 
     public function create(array $data)

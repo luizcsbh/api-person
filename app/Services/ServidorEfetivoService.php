@@ -4,6 +4,8 @@ namespace App\Services;
 
 use Exception;
 use App\Repositories\ServidorEfetivoRepositoryInterface;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\Storage;
 
 class ServidorEfetivoService
 {
@@ -21,6 +23,16 @@ class ServidorEfetivoService
     public function getAllServidoresEfetivos()
     {
         return $this->servidorEfetivoRepository->all();
+    }
+
+        /**
+     * Retorna todas as relações Pessoa cadastradas com paginacao.
+     *
+     * @return mixed Lista de relações Pessoa paginada.
+     */
+    public function paginate(int $perPage = 10)
+    {
+        return $this->servidorEfetivoRepository->paginate($perPage);
     }
 
     /**
@@ -77,4 +89,5 @@ class ServidorEfetivoService
     {
         return $this->servidorEfetivoRepository->delete($id);
     }
+
 }
