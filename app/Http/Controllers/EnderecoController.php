@@ -312,6 +312,24 @@ class EnderecoController extends Controller
      *         )
      *     ),
      *     @OA\Response(
+     *         response=404,
+     *         description="Endereço não encontrado",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="success", type="boolean", example=false),
+     *             @OA\Property(property="message", type="string", example="Endereço não encontrada.")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="Erro ao excluir o endereço devido a dependências",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="success", type="boolean", example=false),
+     *             @OA\Property(property="message", type="string", example="Erro ao deletar o endereço. Possivelmente há dependências associadas.")
+     *         )
+     *     ),
+     *     @OA\Response(
      *         response=500,
      *         description="Erro ao excluir o Endereço",
      *         @OA\JsonContent(
