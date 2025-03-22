@@ -117,12 +117,12 @@ class UnidadeService
      * @return bool True se a exclusão for bem-sucedida, False caso contrário.
      */    
     
-     public function deleteUnidade(int $id): void
-     {
+    public function deleteUnidade(int $id): void
+    {
         DB::beginTransaction();
 
         try {
-     
+        
             $unidade = $this->unidadeRepository->findById($id);
 
             if (!$unidade) {

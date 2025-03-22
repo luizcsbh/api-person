@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Http\Requests\Lotacao\LotacaoRequest;
 use App\Http\Resources\LotacaoResource;
 use App\Services\LotacaoService;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\Response;
 use Illuminate\Http\Request;
 
@@ -125,12 +127,12 @@ class LotacaoController extends Controller
         try{
 
             $validateData = $request->validated();
-            $Lotação = $this->lotacaoService->createLotacao($validateData);
+            $lotacao = $this->lotacaoService->createLotacao($validateData);
 
             return response()->json([
                 'success' => true,
                 'message' => 'Lotação criada com sucesso',
-                'data' => $Lotação
+                'data' => $lotacao
             ], Response::HTTP_CREATED);
         } catch (\Exception $e) {
             return response()->json([
@@ -188,9 +190,9 @@ class LotacaoController extends Controller
     {
         try {
 
-            $Lotação = $this->lotacaoService->getLotacaoById($id);
+            $lotacao = $this->lotacaoService->getLotacaoById($id);
 
-            if(!$Lotação) {
+            if(!$lotacao) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Lotação não encontrada'
@@ -199,12 +201,12 @@ class LotacaoController extends Controller
 
             return response()->json([
                 'success' => true,
-                'data' => new LotacaoResource($Lotação)
+                'data' => new LotacaoResource($lotacao)
             ], Response::HTTP_OK);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Erro ao buscar Lotação',
+                'message' => 'Erro ao buscar lotação',
                 'error' => $e->getMessage()
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
@@ -258,19 +260,28 @@ class LotacaoController extends Controller
     public function update(LotacaoRequest $request, string $id)
     {
         try {
-
-            $validateData = $request->validated();
-            $Lotação = $this->lotacaoService->updateLotacao($validateData, $id);
-
+         
+            $validatedData = $request->validated();
+    
+            $lotacao= $this->lotacaoService->updateLotacao($validatedData, $id);
+    
+            if (!$lotacao) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Erro ao atualizar Lotação: Lotação não encontrada!'
+                ], Response::HTTP_NOT_FOUND);
+            }
+    
             return response()->json([
                 'success' => true,
-                'message' => 'Lotação atualizada com sucesso',
-                'data' => new LotacaoResource($Lotação)
+                'message' => 'Lotação atualizada com sucesso.',
+                'data' => new LotacaoResource($lotacao)
             ], Response::HTTP_OK);
+    
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Erro ao atualizar Lotação',
+                'message' => 'Erro ao atualizar Lotação.',
                 'error' => $e->getMessage()
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
@@ -299,6 +310,24 @@ class LotacaoController extends Controller
      *         )
      *     ),
      *     @OA\Response(
+     *         response=404,
+     *         description="Lotação não encontrada",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="success", type="boolean", example=false),
+     *             @OA\Property(property="message", type="string", example="Lotação não encontrada.")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="Erro ao excluir a lotação devido a dependências",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="success", type="boolean", example=false),
+     *             @OA\Property(property="message", type="string", example="Erro ao deletar a Lotação. Possivelmente há dependências associadas.")
+     *         )
+     *     ),
+     *     @OA\Response(
      *         response=500,
      *         description="Erro ao excluir o Lotação",
      *         @OA\JsonContent(
@@ -312,19 +341,30 @@ class LotacaoController extends Controller
      */
     public function destroy(string $id)
     {
-        try{
-            
+        try {
             $this->lotacaoService->deleteLotacao($id);
 
             return response()->json([
                 'success' => true,
-                'message' => 'Lotação excluída com sucesso'
+                'message' => 'Lotação excluída com sucesso.'
             ], Response::HTTP_OK);
+
+        } catch (ModelNotFoundException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], Response::HTTP_NOT_FOUND);
+
+        } catch (QueryException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Erro ao deletar a lotação. Possivelmente há dependências associadas.'
+            ], Response::HTTP_BAD_REQUEST);
+
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Erro ao deletar Lotação',
-                'error' => $e->getMessage()
+                'message' => 'Ocorreu um erro inesperado ao deletar a Lotação.'
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }

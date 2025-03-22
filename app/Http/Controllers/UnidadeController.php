@@ -58,9 +58,9 @@ class UnidadeController extends Controller
     {
         try {
             $perPage = $request->input('per_page', 10);
-            $unidade = $this->unidadeService->paginate($perPage);
+            $unidades = $this->unidadeService->paginate($perPage);
     
-            if ($unidade->total() === 0) {
+            if ($unidades->total() === 0) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Nenhuma unidade encontrada!',
@@ -68,7 +68,7 @@ class UnidadeController extends Controller
                 ], Response::HTTP_NOT_FOUND);
             }
 
-            return UnidadeResource::collection($unidade)
+            return UnidadeResource::collection($unidades)
                 ->additional([
                     'success' => true,
                     'message' => 'Lista de unidades recuperada com sucesso.'
