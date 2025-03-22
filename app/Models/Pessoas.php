@@ -74,27 +74,28 @@ class Pessoas extends Model
 
     public function fotos()
     {
-        return $this->hasMany(FotoPessoa::class, 'pes_id', 'pes_id');
+        return $this->hasMany(FotoPessoa::class, 'pes_id' );
     }
 
     public function lotacoes()
     {
-        return $this->hasMany(Lotacao::class, 'pes_id', 'pes_id');
+        return $this->hasMany(Lotacao::class, 'pes_id');
     }
 
     public function servidorTemporario()
     {
-        return $this->hasOne(ServidorTemporario::class, 'pes_id', 'pes_id');
+        return $this->hasOne(ServidorTemporario::class, 'pes_id');
     }
 
     public function servidorEfetivo()
     {
-        return $this->hasOne(ServidorEfetivo::class, 'pes_id', 'pes_id');
+        return $this->hasOne(ServidorEfetivo::class, 'pes_id');
     }
 
     public function enderecos()
     {
-        return $this->belongsToMany(Endereco::class, 'pessoas_enderecos', 'pes_id', 'end_id')
+        return $this->belongsToMany(Endereco::class, 'pessoas_enderecos', 'pes_id','end_id')
+            ->using(PessoaEndereco::class)
             ->withTimestamps();
     }
 }

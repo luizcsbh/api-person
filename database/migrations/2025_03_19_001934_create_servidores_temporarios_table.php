@@ -17,7 +17,7 @@ return new class extends Migration
                 ->onDelete('cascade');
                 
             $table->date('st_data_admissao');
-            $table->date('st_data_demissao');
+            $table->date('st_data_demissao')->nullable();
             $table->timestamps();
         });
     }

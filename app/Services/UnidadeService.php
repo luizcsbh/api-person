@@ -4,10 +4,11 @@ namespace App\Services;
 
 use Exception;
 use App\Repositories\UnidadeRepositoryInterface;
+use Illuminate\Support\Facades\DB;
 
 class UnidadeService
 {
-    protected UnidadeRepositoryInterface $unidadeRepository;
+    protected  $unidadeRepository;
 
     public function __construct(UnidadeRepositoryInterface $unidadeRepository)
     {
@@ -56,8 +57,21 @@ class UnidadeService
      * @return mixed Dados da relação criada.
      */
     public function createUnidade(array $data)
-    {  
-        return $this->unidadeRepository->create($data);
+    {
+        DB::beginTransaction();
+
+        try {
+            
+            $unidade = $this->unidadeRepository->create($data);
+
+            DB::commit(); 
+
+            return $unidade; 
+
+        } catch (\Exception $e) {
+            DB::rollBack(); 
+            throw new Exception("Erro ao criar unidade: " . $e->getMessage());
+        }
     }
 
     /**
@@ -68,18 +82,55 @@ class UnidadeService
      * @return mixed Dados da relação atualizada.
      * @throws Exception Se o ID não for encontrado.
      */
-    public function updateUnidade(array $data, $id)
+    public function updateUnidade(array $data, int $id)
     {
-        return $this->unidadeRepository->update($data, $id);
+        try {
+            DB::beginTransaction();
+            $unidade = $this->unidadeRepository->findById($id);
+            
+            if (!$unidade) {
+                throw new Exception("Erro: Unidade não encontrada!");
+            }
+    
+            $unidade->update($data);
+    
+            DB::commit();
+            return $unidade; 
+    
+        } catch (Exception $e) {
+            DB::rollBack(); 
+            throw new Exception("Falha ao atualizar unidade: " . $e->getMessage());
+        }
     }
-
+    
     /**
      * Exclui uma relação Unidade pelo ID.
      *
      * @param int $id Identificador da relação Unidade a ser excluída.
      * @return bool True se a exclusão for bem-sucedida, False caso contrário.
-     */    public function deleteUnidade($id)
+     */    
+    public function deleteUnidade(int $id)
     {
-        return $this->unidadeRepository->delete($id);
+        DB::beginTransaction(); // Inicia a transação
+
+        try {
+            
+            $unidade = $this->unidadeRepository->findById($id);
+
+            if (!$unidade) {
+                throw new Exception('Erro: Unidade não encontrada!');        
+            }
+
+            $unidade->delete($id);
+
+            DB::commit(); 
+
+            return $unidade;
+
+        } catch (Exception $e) {
+            DB::rollBack(); 
+            throw new Exception('Falha ao deletar unidade: ' . $e->getMessage());
+        }
     }
+
 }

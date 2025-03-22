@@ -4,10 +4,11 @@ namespace App\Services;
 
 use Exception;
 use App\Repositories\EnderecoRepositoryInterface;
+use Illuminate\Support\Facades\DB;
 
 class EnderecoService
 {
-    protected EnderecoRepositoryInterface $enderecoRepository;
+    protected $enderecoRepository;
 
     public function __construct(EnderecoRepositoryInterface $enderecoRepository)
     {
@@ -44,7 +45,7 @@ class EnderecoService
     {
         $endereco = $this->enderecoRepository->findById($id);
         if (!$endereco) {
-            throw new Exception('Endereço não encontrado.');
+            throw new Exception('Endereço não encontrado!');
         }
         return $endereco;
     }
@@ -56,8 +57,21 @@ class EnderecoService
      * @return mixed Dados da relação criada.
      */
     public function createEndereco(array $data)
-    {  
-        return $this->enderecoRepository->create($data);
+    {
+        DB::beginTransaction();
+
+        try {
+            
+            $endereco = $this->enderecoRepository->create($data);
+
+            DB::commit(); 
+
+            return $endereco; 
+
+        } catch (\Exception $e) {
+            DB::rollBack(); 
+            throw new Exception("Erro ao criar endereço: " . $e->getMessage());
+        }
     }
 
     /**
@@ -70,12 +84,25 @@ class EnderecoService
      */
     public function updateEndereco(array $data, $id)
     {
-        $endereco = $this->enderecoRepository->findById($id);
-        if (!$endereco) {
-            throw new Exception('Endereço não encontrado.');
-        }
+        DB::beginTransaction();
 
-        return $this->enderecoRepository->update($data, $id);
+        try {
+
+            $endereco = $this->enderecoRepository->findById($id);
+
+            if (!$endereco) {
+                throw new Exception('Endereço não encontrado!');
+            }
+    
+            $endereco->update($data);
+
+            DB::commit();
+            return $endereco;
+
+        } catch (Exception $e) {
+            DB::rollBack(); 
+            throw new Exception("Falha ao atualizar endereço: " . $e->getMessage());
+        }   
     }
 
     /**
@@ -85,6 +112,25 @@ class EnderecoService
      * @return bool True se a exclusão for bem-sucedida, False caso contrário.
      */    public function deleteEndereco($id)
     {
-        return $this->enderecoRepository->delete($id);
+                DB::beginTransaction(); // Inicia a transação
+
+        try {
+            
+            $endereco = $this->enderecoRepository->findById($id);
+
+            if (!$endereco) {
+                throw new Exception('Erro: Endereço não encontrada!');        
+            }
+
+            $endereco->delete($id);
+
+            DB::commit(); 
+
+            return $endereco;
+
+        } catch (Exception $e) {
+            DB::rollBack(); 
+            throw new Exception('Falha ao deletar endereço: ' . $e->getMessage());
+        }
     }
 }

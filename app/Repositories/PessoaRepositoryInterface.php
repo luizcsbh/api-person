@@ -9,5 +9,6 @@ interface PessoaRepositoryInterface
     public function findById($id);
     public function create(array $data);
     public function update(array $data, $id);
+    public function findWithRelations($id, array $relations);
     public function delete($id);
 }

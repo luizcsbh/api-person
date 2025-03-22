@@ -38,11 +38,10 @@ class Unidade extends Model
 
     protected $table = 'unidades';
     protected $primaryKey = 'unid_id';
+    public $incrementing = true;
+    protected $keyType = 'int';
 
-    protected $fillable = [
-        'unid_nome',
-        'unid_sigla',
-    ];
+    protected $fillable = ['unid_nome', 'unid_sigla'];
 
     public function enderecos()
     {

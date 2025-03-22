@@ -194,7 +194,7 @@ class EnderecoController extends Controller
             if(!$Endereco) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Endereco não encontrado.'
+                    'message' => 'Endereco não encontrado!'
                 ], Response::HTTP_NOT_FOUND);
             }
 
@@ -207,7 +207,7 @@ class EnderecoController extends Controller
                 'success' => false,
                 'message' => 'Erro ao buscar Endereço.',
                 'error' => $e->getMessage()
-            ], Response::HTTP_INTERNAL_SERVER_ERROR);
+            ], Response::HTTP_NOT_FOUND);
         }
     }
 

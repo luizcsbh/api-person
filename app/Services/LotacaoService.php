@@ -7,7 +7,7 @@ use App\Repositories\LotacaoRepositoryInterface;
 
 class LotacaoService
 {
-    protected LotacaoRepositoryInterface $lotacaoRepository;
+    protected $lotacaoRepository;
 
     public function __construct(LotacaoRepositoryInterface $lotacaoRepository)
     {

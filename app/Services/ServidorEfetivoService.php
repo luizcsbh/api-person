@@ -4,12 +4,11 @@ namespace App\Services;
 
 use Exception;
 use App\Repositories\ServidorEfetivoRepositoryInterface;
-use Carbon\Carbon;
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\DB;
 
 class ServidorEfetivoService
 {
-    protected ServidorEfetivoRepositoryInterface $servidorEfetivoRepository;
+    protected $servidorEfetivoRepository;
 
     public function __construct(ServidorEfetivoRepositoryInterface $servidorEfetivoRepository)
     {
@@ -44,11 +43,8 @@ class ServidorEfetivoService
      */
     public function getServidoresEfetivosById($id)
     {
-        $servidorEfetivo = $this->servidorEfetivoRepository->findById($id);
-        if (!$servidorEfetivo) {
-            throw new Exception('Servidor efetivo não encontrado.');
-        }
-        return $servidorEfetivo;
+        return $this->servidorEfetivoRepository->findById($id)
+            ?? throw new Exception('Servidor efetivo não encontrado.');
     }
 
     /**
@@ -59,7 +55,15 @@ class ServidorEfetivoService
      */
     public function createServidorEfetivo(array $data)
     {  
-        return $this->servidorEfetivoRepository->create($data);
+        DB::beginTransaction();
+        try {
+            $servidorEfetivo = $this->servidorEfetivoRepository->create($data);
+            DB::commit();
+            return $servidorEfetivo;
+        } catch (Exception $e) {
+            DB::rollBack();
+            throw new Exception("Falha ao criar servidor efetivo: "  . $e->getMessage());
+        }
     }
 
     /**
@@ -72,13 +76,27 @@ class ServidorEfetivoService
      */
     public function updateServidorEfetivo(array $data, $id)
     {
-        $servidorEfetivo = $this->servidorEfetivoRepository->findById($id);
-        if (!$servidorEfetivo) {
-            throw new Exception('Servidor efetivo não encontrado.');
+        DB::beginTransaction();
+        try {
+            // Busca o servidor efetivo pelo ID
+            $servidorEfetivo = $this->servidorEfetivoRepository->findById($id);
+            
+            if (!$servidorEfetivo) {
+                throw new Exception('Servidor Efetivo não encontrado!');
+            }
+    
+            // Atualiza os dados do servidor efetivo
+            $servidorEfetivo = $this->servidorEfetivoRepository->update($data, $id);
+    
+            DB::commit();
+            return $servidorEfetivo;
+    
+        } catch (Exception $e) {
+            DB::rollBack();
+            throw new Exception("Falha ao atualizar servidor efetivo: " . $e->getMessage());
         }
-
-        return $this->servidorEfetivoRepository->update($data, $id);
     }
+    
 
     /**
      * Exclui uma relação Servidor Efetivo pelo ID.
@@ -87,7 +105,15 @@ class ServidorEfetivoService
      * @return bool True se a exclusão for bem-sucedida, False caso contrário.
      */    public function deleteServidorEfetivo($id)
     {
-        return $this->servidorEfetivoRepository->delete($id);
+         DB::beginTransaction();
+        try {
+            $this->servidorEfetivoRepository->delete($id);
+            DB::commit();
+            return true;
+        } catch (Exception $e) {
+            DB::rollBack();
+            throw new Exception("Falha ao excluir servidor efetivo: " . $e->getMessage());
+        }
     }
 
 }

@@ -2,20 +2,30 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\Servidor\Efetivo\ServidorEfetivoRequest;
-use Illuminate\Http\Response;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+use App\Services\PessoaService;
+use App\Services\EnderecoService;
 use App\Services\ServidorEfetivoService;
-
 use App\Http\Resources\ServidorEfetivoResource;
+use App\Http\Requests\Servidor\Efetivo\ServidorEfetivoRequest;
+use Illuminate\Support\Facades\DB;
 
 class ServidorEfetivoController extends Controller
 {
     protected $servidorEfetivoService;
+    protected $pessoaService;
+    protected $enderecoService;
 
-    public function __construct(ServidorEfetivoService $servidorEfetivoService)
+    public function __construct(
+        ServidorEfetivoService $servidorEfetivoService,
+        PessoaService $pessoaService,
+        EnderecoService $enderecoService
+    )
     {
         $this->servidorEfetivoService = $servidorEfetivoService;
+        $this->pessoaService = $pessoaService;
+        $this->enderecoService = $enderecoService;
     }
 
     /**
@@ -86,54 +96,100 @@ class ServidorEfetivoController extends Controller
     /**
      * @OA\Post(
      *     path="/servidores-efetivos",
-     *     summary="Cria uma nova servidor efetivo",
-     *     description="Registra um novo servidor efetivo no banco de dados.",
+     *     summary="Cria um servidor efetivo",
+     *     description="Registra um servidor efetivo no banco de dados.",
      *     tags={"Servidor Efetivo"},
      *     @OA\RequestBody(
      *         required=true,
-     *         description="Dados necessários para criar um novo servidor efetivo",
+     *         description="Dados necessários para criar um servidor efetivo",
      *         @OA\JsonContent(
-     *             required={"pes_id","se_matricula"},
-     *             @OA\Property(property="pes_id", type="integer", example="2"),
-     *             @OA\Property(property="se_matricula", type="string", example="2003456788467")
+     *             required={"pes_nome","pes_cpf","se_matricula","pes_data_nascimento","pes_sexo","pes_mae","pes_pai","cid_id","end_tipo_logradouro","end_logradouro","end_numero","end_bairro"},
+     *             @OA\Property(property="pes_nome", type="string", example="João da Silva"),
+     *             @OA\Property(property="pes_cpf", type="string", example="111.222.333-44"),
+     *             @OA\Property(property="se_matricula", type="string", example="2003456788467"),
+     *             @OA\Property(property="pes_data_nascimento", type="datetime", example="1978-08-23"),
+     *             @OA\Property(property="pes_sexo", type="string", example="Masculino"),
+     *             @OA\Property(property="pes_mae", type="string", example="Maria Aparecida da Silva"),
+     *             @OA\Property(property="pes_pai", type="string", example="Cícero Joaquim da Silva"),
+     *             @OA\Property(property="cid_id", type="integer", example="1"),
+     *             @OA\Property(property="end_tipo_logradouro", type="string", example="Avenida"),
+     *             @OA\Property(property="end_logradouro", type="string", example="Silviano Brandão"),
+     *             @OA\Property(property="end_numero", type="integer", example="1000"),
+     *             @OA\Property(property="end_complemento", type="string", example="Bloco E, 50 apartamento 303"),
+     *             @OA\Property(property="end_bairro", type="string", example="Horto Florestal")
      *         )
      *     ),
      *     @OA\Response(
      *         response=201,
-     *         description="Servidor Efetivo criado com sucesso",
+     *         description="Pessoa criado com sucesso",
      *         @OA\JsonContent(
      *             type="object",
      *             @OA\Property(property="success", type="boolean", example=true),
-     *             @OA\Property(property="message", type="string", example="Servidor Efetivo criado com sucesso."),
-     *             @OA\Property(property="data", ref="#/components/schemas/ServidorEfetivo")
+     *             @OA\Property(property="message", type="string", example="Pessoa criado com sucesso."),
+     *             @OA\Property(property="data", ref="#/components/schemas/Pessoas")
      *         )
      *     ),
      *     @OA\Response(
      *         response=500,
-     *         description="Erro ao criar o servidor efetivo",
+     *         description="Erro ao criar o pessoa",
      *         @OA\JsonContent(
      *             type="object",
-     *             @OA\Property(property="error", type="string", example="Erro ao criar o servidor efetivo.")
+     *             @OA\Property(property="error", type="string", example="Erro ao criar o ")
      *         )
      *     )
      * )
      */
     public function store(ServidorEfetivoRequest $request)
     {
-        try{
-            
-            $validateData = $request->validated();
-            $servidorEfetivo = $this->servidorEfetivoService->createServidorEfetivo($validateData);
-
+        try {
+            // Criar Pessoa
+            $pessoa = $this->pessoaService->createPessoa(
+                $request->only([
+                    'pes_nome',
+                    'pes_cpf',
+                    'pes_data_nascimento',
+                    'pes_sexo',
+                    'pes_mae',
+                    'pes_pai'
+                ])
+            );
+    
+            // Criar Endereço
+            $endereco = $this->enderecoService->createEndereco(
+                $request->only([
+                    'end_tipo_logradouro',
+                    'end_logradouro',
+                    'end_numero',
+                    'end_complemento',
+                    'end_bairro',
+                    'end_cep',
+                    'cid_id'
+                ])
+            );
+    
+            // Vincular endereço à pessoa
+            $pessoa->enderecos()->attach($endereco->end_id);
+    
+            // Criar Servidor Efetivo
+            $servidorEfetivo = $this->servidorEfetivoService->createServidorEfetivo([
+                'pes_id' => $pessoa->pes_id,
+                'se_matricula' => $request->se_matricula
+            ]);
+    
             return response()->json([
                 'success' => true,
-                'message' => 'Pessoa criada com sucesso',
-                'data' => $servidorEfetivo
+                'message' => 'Pessoa, endereço e servidor efetivo criados com sucesso.',
+                'data' => [
+                    'pessoa' => $pessoa,
+                    'endereco' => $endereco,
+                    'servidor_efetivo' => $servidorEfetivo
+                ]
             ], Response::HTTP_CREATED);
+    
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Erro ao criar servidor efetivo',
+                'message' => 'Erro ao criar registros.',
                 'error' => $e->getMessage()
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
@@ -254,18 +310,44 @@ class ServidorEfetivoController extends Controller
     {
         try {
 
-            $validateData = $request->validated();
-            $servidorEfetivo = $this->servidorEfetivoService->updateServidorEfetivo($validateData, $id);
+            $servidorEfetivo = $this->servidorEfetivoService->getServidoresEfetivosById($id);
+
+            $pessoa = $this->pessoaService->updatePessoa(
+                $request->only([
+                    'pes_nome', 'pes_cpf', 'pes_data_nascimento', 'pes_sexo', 'pes_mae', 'pes_pai'
+                ]),
+                $servidorEfetivo->pes_id
+            );
+
+            $endereco = $pessoa->endereco()->firstOrFail();
+            $enderecoAtualizado = $this->enderecoService->updateEndereco(
+                $request->only([
+                    'end_tipo_logradouro', 'end_logradouro', 'end_numero', 'end_complemento', 'end_bairro','cid_id'
+                ]),
+                $endereco->end_id
+            );
+
+            $servidorAtualizado = $this->servidorEfetivoService->updateServidorEfetivo(
+                ['se_matricula' => $request->se_matricula],
+                $id
+            );
+
+            DB::commit();
 
             return response()->json([
                 'success' => true,
-                'message' => 'Servidor Efetivo atualizada com sucesso',
-                'data' => new ServidorEfetivoResource($servidorEfetivo)
+                'message' => 'Registros atualizados com sucesso.',
+                'data' => [
+                    'pessoa' => $pessoa,
+                    'endereco' => $enderecoAtualizado,
+                    'servidores_efetivos' => $servidorAtualizado
+                ]
             ], Response::HTTP_OK);
         } catch (\Exception $e) {
+            DB::rollBack();
             return response()->json([
                 'success' => false,
-                'message' => 'Erro ao atualizar servidor efetivo',
+                'message' => 'Erro ao atualizar registros:',
                 'error' => $e->getMessage()
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }

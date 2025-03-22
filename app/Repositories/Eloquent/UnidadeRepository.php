@@ -2,9 +2,7 @@
 
 namespace App\Repositories\Eloquent;
 
-use Exception;
 use App\Models\Unidade;
-use Illuminate\Support\Facades\DB;
 use App\Repositories\UnidadeRepositoryInterface;
 use Illuminate\Pagination\LengthAwarePaginator;
 
@@ -35,48 +33,21 @@ class UnidadeRepository implements UnidadeRepositoryInterface
 
     public function create(array $data)
     {
-        try {
-            DB::beginTransaction();
-            $unidade = $this->model->create($data);
-            DB::commit();
-            return $unidade;
-        } catch (Exception $e) {
-            DB::rollBack();
-            throw $e;
-        }
+        return $this->model->create($data);     
     }
 
-    public function update(array $data, $id)
+    public function update(array $data)
     {
-        try {
-            DB::beginTransaction();
-            $unidade = $this->model->find($id);
-            if (!$unidade) {
-                throw new Exception('Unidade não encontrada.');
-            }
-            $unidade->update($data);
-            DB::commit();
-            return $unidade;
-        } catch (Exception $e) {
-            DB::rollBack();
-            throw $e;
-        }
+        return $this->model->update($data);
+    }
+
+    public function findWithRelations($id, array $relations)
+    {
+        return $this->model->with($relations)->find($id);
     }
 
     public function delete($id)
     {
-        try {
-            DB::beginTransaction();
-            $unidade = $this->model->find($id);
-            if (!$unidade) {
-                throw new Exception('Unidade não encontrada.');
-            }
-            $unidade->deleteOrFail();
-            DB::commit();
-            return $unidade;
-        } catch (Exception $e) {
-            DB::rollBack();
-            throw $e;
-        }
+        return $this->model->findOrFail($id)->delete();
     }
 }

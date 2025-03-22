@@ -4,7 +4,6 @@ namespace App\Repositories\Eloquent;
 
 use Exception;
 use App\Models\Pessoas;
-use Illuminate\Support\Facades\DB;
 use App\Repositories\PessoaRepositoryInterface;
 use Illuminate\Pagination\LengthAwarePaginator;
 
@@ -24,59 +23,32 @@ class PessoaRepository implements PessoaRepositoryInterface
 
     public function paginate(int $perPage = 10): LengthAwarePaginator
     {
-        return $this->model->with(['enderecos','lotacoes','servidorEfetivo'])
+        return $this->model->with(['enderecos','lotacoes'])
             ->paginate($perPage);
     }
 
     public function findById($id)
     {
-        return $this->model->find($id);
+        return $this->model->with(['enderecos'])->find($id);
     }
 
     public function create(array $data)
     {
-        try {
-            DB::beginTransaction();
-            $pessoa = $this->model->create($data);
-            DB::commit();
-            return $pessoa;
-        } catch (Exception $e) {
-            DB::rollBack();
-            throw $e;
-        }
+        return $this->model->create($data);     
     }
 
     public function update(array $data, $id)
     {
-        try {
-            DB::beginTransaction();
-            $pessoa = $this->model->find($id);
-            if (!$pessoa) {
-                throw new Exception('Pessoa não encontrada.');
-            }
-            $pessoa->update($data);
-            DB::commit();
-            return $pessoa;
-        } catch (Exception $e) {
-            DB::rollBack();
-            throw $e;
-        }
+        return $this->model->update($data);
+    }
+
+    public function findWithRelations($id, array $relations)
+    {
+        return $this->model->with($relations)->find($id);
     }
 
     public function delete($id)
     {
-        try {
-            DB::beginTransaction();
-            $pessoa = $this->model->find($id);
-            if (!$pessoa) {
-                throw new Exception('Pessoa não encontrada.');
-            }
-            $pessoa->delete();
-            DB::commit();
-            return $pessoa;
-        } catch (Exception $e) {
-            DB::rollBack();
-            throw $e;
-        }
+        return $this->model->findOrFail($id)->delete();
     }
 }

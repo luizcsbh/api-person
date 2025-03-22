@@ -14,6 +14,7 @@ class EnderecoResource extends JsonResource
             'end_tipo_logradouro' => $this->end_tipo_logradouro,
             'end_logradouro' => $this->end_logradouro,
             'end_numero' => $this->end_numero,
+            'end_complemento' => $this->end_complemento,
             'end_bairro' => $this->end_bairro,
         ];
     }

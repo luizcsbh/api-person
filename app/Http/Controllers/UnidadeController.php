@@ -91,12 +91,9 @@ class UnidadeController extends Controller
      *         required=true,
      *         description="Dados necessários para criar uma nova unidade",
      *         @OA\JsonContent(
-     *             required={"pes_nome","pes_data_nascimento","pes_sexo","pes_mae","pes_pai"},
-     *             @OA\Property(property="pes_nome", type="string", example="João da Silva"),
-     *             @OA\Property(property="pes_data_nascimento", type="datetime", example="1978-08-23"),
-     *             @OA\Property(property="pes_sexo", type="string", example="Masculino"),
-     *             @OA\Property(property="pes_mae", type="string", example="Maria Aparecida da Silva"),
-     *             @OA\Property(property="pes_pai", type="string", example="Cícero Joaquim da Silva")
+     *             required={"unid_nome","unid_sigla"},
+     *             @OA\Property(property="unid_nome", type="string", example="Secretaria de Planejamento e Gestão"),
+     *             @OA\Property(property="unid_sigla", type="string", example="SEPLAG"),
      *         )
      *     ),
      *     @OA\Response(
@@ -226,12 +223,9 @@ class UnidadeController extends Controller
      *         required=false,
      *         description="Dados para atualização da unidade",
      *         @OA\JsonContent(
-     *             required={"pes_nome","pes_data_nascimento","pes_sexo","pes_mae","pes_pai"},
-     *             @OA\Property(property="pes_nome", type="string", example="João da Silva"),
-     *             @OA\Property(property="pes_data_nascimento", type="date", example="1978-08-23"),
-     *             @OA\Property(property="pes_sexo", type="string", example="Masculino"),
-     *             @OA\Property(property="pes_mae", type="string", example="Maria Aparecida da Silva"),
-     *             @OA\Property(property="pes_pai", type="string", example="Cícero Joaquim da Silva")
+     *             required={"unid_nome","unid_sigla"},
+     *             @OA\Property(property="unid_nome", type="string", example="Secretaria de Planejamento e Gestão"),
+     *             @OA\Property(property="unid_sigla", type="string", example="SEPLAG"),
      *         )
      *     ),
      *     @OA\Response(
@@ -254,18 +248,27 @@ class UnidadeController extends Controller
      *     )
      * )
      */ 
-    public function update(UnidadeRequest $request, string $id)
+    public function update(UnidadeRequest $request, int $id)
     {
         try {
-
-            $validateData = $request->validated();
-            $unidade = $this->unidadeService->updateUnidade($validateData, $id);
-
+         
+            $validatedData = $request->validated();
+    
+            $unidade = $this->unidadeService->updateUnidade($validatedData, $id);
+    
+            if (!$unidade) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Erro ao atualizar unidade: Unidade não encontrada'
+                ], Response::HTTP_NOT_FOUND);
+            }
+    
             return response()->json([
                 'success' => true,
                 'message' => 'Unidade atualizada com sucesso',
                 'data' => new UnidadeResource($unidade)
             ], Response::HTTP_OK);
+    
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,

@@ -27,5 +27,5 @@ Route::resource('/pessoas', PessoaController::class);
 Route::resource('/unidades', UnidadeController::class);
 Route::resource('/lotacoes', LotacaoController::class);
 Route::resource('/enderecos', EnderecoController::class);
-Route::resource('servidores-efetivos', ServidorEfetivoController::class);
+Route::resource('/servidores-efetivos', ServidorEfetivoController::class);
 //Route::resource('servidores-temporarios', ServidorTemporarioController::class);

@@ -1,13 +1,11 @@
 <?php
 
-namespace App\Http\Requests\Servidor\Efetivo;
+namespace App\Http\Requests\Pessoa;
 
-use App\Rules\Servidor\UniqueServidor;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
-use App\Models\ServidorTemporario;
 
-class ServidorEfetivoRequest extends FormRequest
+class PessoaEnderecoRequest extends FormRequest
 {
     public function authorize()
     {
@@ -17,44 +15,24 @@ class ServidorEfetivoRequest extends FormRequest
     public function rules()
     {
         $ruleType = $this->isMethod('PUT') ? 'sometimes' : 'required';
-        
 
-        $rules = [
-            // Regras para Pessoa (campos obrigatórios)
+        return [
+            // Regras para Pessoa
             'pes_nome' => "$ruleType|string|max:200|min:3",
             'pes_cpf' => [
                 $ruleType,
                 'string',
                 'max:14',
-                $this->isMethod('PUT') && $this->servidorEfetivo
-                    ? Rule::unique('pessoas', 'pes_cpf')->ignore($this->servidorEfetivo->pes_id, 'pes_id')
+                $this->isMethod('PUT')
+                    ? Rule::unique('pessoas', 'pes_cpf')->ignore($this->pessoa->pes_id, 'pes_id')
                     : Rule::unique('pessoas', 'pes_cpf')
-            ],
-            'pes_id' => [
-                $ruleType,
-                'exists:pessoas,pes_id',
-                new UniqueServidor,
-                function($attribute, $value, $fail) {
-                    if ($this->isMethod('PUT') && !$this->servidorEfetivo) {
-                        $fail('Registro de servidor efetivo inválido');
-                        return;
-                    }
-        
-                    $servidorTemporario = ServidorTemporario::where('pes_id', $value)
-                        ->whereNull('st_data_demissao')
-                        ->exists();
-
-                    if ($servidorTemporario) {
-                        $fail('Pessoa com vinculo temporário ativo não podem ser servidores efetivos.');
-                    }
-                }
             ],
             'pes_data_nascimento' => "$ruleType|date",
             'pes_sexo' => "$ruleType|string|max:9",
             'pes_mae' => "$ruleType|string|max:200|min:3",
             'pes_pai' => "$ruleType|string|max:200|min:3",
 
-            // Regras para Endereço
+            // Regras para Endereço (array)
             'cid_id' => "$ruleType|exists:cidades,cid_id",
             'end_tipo_logradouro' => "$ruleType|string|max:50|min:3",
             'end_logradouro' => "$ruleType|string|max:200|min:3",
@@ -62,26 +40,6 @@ class ServidorEfetivoRequest extends FormRequest
             'end_complemento' => "nullable|string|max:100",
             'end_bairro' => "$ruleType|string|max:100|min:3",
         ];
-
-        // Validações específicas para PUT (atualização)
-        if ($this->isMethod('PUT')) {
-            $rules['pes_id'] = [
-                'sometimes',
-                'exists:pessoas,pes_id',
-                new UniqueServidor,
-                function ($attribute, $value, $fail) {
-                    $servidorTemporario = ServidorTemporario::where('pes_id', $value)
-                        ->whereNull('st_data_demissao')
-                        ->exists();
-
-                    if ($servidorTemporario) {
-                        $fail('Pessoas com vínculo temporário ativo não podem ser servidores efetivos.');
-                    }
-                }
-            ];
-        }
-
-        return $rules;
     }
 
     public function messages()

@@ -74,7 +74,8 @@ class Endereco extends Model
 
     public function pessoas()
     {
-        return $this->belongsToMany(Pessoas::class, 'pessoas_enderecos', 'end_id', 'pes_id')
+        return $this->belongsToMany(Pessoas::class, 'pessoas_enderecos')
+            ->using(PessoaEndereco::class)
             ->withTimestamps();
     }
 

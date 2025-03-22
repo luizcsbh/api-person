@@ -2,9 +2,7 @@
 
 namespace App\Repositories\Eloquent;
 
-use Exception;
 use App\Models\Endereco;
-use Illuminate\Support\Facades\DB;
 use App\Repositories\EnderecoRepositoryInterface;
 use Illuminate\Pagination\LengthAwarePaginator;
 
@@ -35,48 +33,21 @@ class EnderecoRepository implements EnderecoRepositoryInterface
 
     public function create(array $data)
     {
-        try {
-            DB::beginTransaction();
-            $endereco = $this->model->create($data);
-            DB::commit();
-            return $endereco;
-        } catch (Exception $e) {
-            DB::rollBack();
-            throw $e;
-        }
+        return $this->model->create($data);     
     }
 
     public function update(array $data, $id)
     {
-        try {
-            DB::beginTransaction();
-            $endereco = $this->model->find($id);
-            if (!$endereco) {
-                throw new Exception('Endereço não encontrada.');
-            }
-            $endereco->update($data);
-            DB::commit();
-            return $endereco;
-        } catch (Exception $e) {
-            DB::rollBack();
-            throw $e;
-        }
+        return $this->model->where('end_id',$id)->update($data, $id);
+    }
+
+    public function findWithRelations($id, array $relations)
+    {
+        return $this->model->with($relations)->find($id);
     }
 
     public function delete($id)
     {
-        try {
-            DB::beginTransaction();
-            $endereco = $this->model->find($id);
-            if (!$endereco) {
-                throw new Exception('Endereço não encontrada.');
-            }
-            $endereco->delete();
-            DB::commit();
-            return $endereco;
-        } catch (Exception $e) {
-            DB::rollBack();
-            throw $e;
-        }
+        return $this->model->findOrFail($id)->delete();
     }
 }

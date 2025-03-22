@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('unidades', function (Blueprint $table) {
             $table->id('unid_id');
             $table->string('unid_nome', 200)->index();
-            $table->string('unid_sigla', 20)->index();
+            $table->string('unid_sigla', 20)->unique()->index();
             $table->timestamps();
         });
     }

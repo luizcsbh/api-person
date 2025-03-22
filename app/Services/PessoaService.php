@@ -4,10 +4,18 @@ namespace App\Services;
 
 use Exception;
 use App\Repositories\PessoaRepositoryInterface;
+use Illuminate\Support\Facades\DB;
 
 class PessoaService
 {
-    protected PessoaRepositoryInterface $pessoaRepository;
+    protected $pessoaRepository;
+
+    protected $checkRelations = [
+        'enderecos',
+        'lotacoes',
+        'servidorEfetivo',
+        'servidorTemporario'
+    ];
 
     public function __construct(PessoaRepositoryInterface $pessoaRepository)
     {
@@ -56,8 +64,19 @@ class PessoaService
      * @return mixed Dados da relação criada.
      */
     public function createPessoa(array $data)
-    {  
-        return $this->pessoaRepository->create($data);
+    {
+        DB::beginTransaction();
+
+        try {
+            
+            $pessoa = $this->pessoaRepository->create($data);
+            DB::commit(); 
+            return $pessoa; 
+
+        } catch (\Exception $e) {
+            DB::rollBack(); 
+            throw new Exception("Erro ao criar pessoa: " . $e->getMessage());
+        }
     }
 
     /**
@@ -70,12 +89,25 @@ class PessoaService
      */
     public function updatePessoa(array $data, $id)
     {
-        $Pessoa = $this->pessoaRepository->findById($id);
-        if (!$Pessoa) {
-            throw new Exception('Pessoa não encontrado.');
-        }
+        DB::beginTransaction();
 
-        return $this->pessoaRepository->update($data, $id);
+        try {
+
+            $pessoa = $this->pessoaRepository->findById($id);
+
+            if (!$pessoa) {
+                throw new Exception('Pessoa não encontrada!');
+            }
+    
+            $pessoa->update($data);
+
+            DB::commit();
+            return $pessoa;
+
+        } catch (Exception $e) {
+            DB::rollBack(); 
+            throw new Exception("Falha ao atualizar pessoa: " . $e->getMessage());
+        }   
     }
 
     /**
@@ -83,8 +115,76 @@ class PessoaService
      *
      * @param int $id Identificador da relação Pessoa a ser excluída.
      * @return bool True se a exclusão for bem-sucedida, False caso contrário.
-     */    public function deletePessoa($id)
+     */ 
+    public function deletePessoa($id)
     {
-        return $this->pessoaRepository->delete($id);
+        DB::beginTransaction();
+            
+        try {
+            $pessoa = $this->pessoaRepository->findWithRelations($id, $this->checkRelations);
+            
+            if (!$pessoa) {
+                throw new Exception('Pessoa não encontrada.');
+            }
+
+            $this->checkRelations($pessoa);
+            
+            $this->pessoaRepository->delete($id);
+            
+            DB::commit();
+            
+            return [
+                'success' => true,
+                'message' => 'Pessoa excluída com sucesso'
+            ];
+
+        } catch (Exception $e) {
+            DB::rollBack();
+            return [
+                'success' => false,
+                'message' => $e->getMessage()
+            ];
+        }
     }
+
+    protected function checkRelations($pessoa)
+    {
+        $errors = [];
+        
+        foreach ($this->checkRelations as $relation) {
+            if ($this->hasActiveRelation($pessoa, $relation)) {
+                $errors[] = $this->getRelationMessage($relation);
+            }
+        }
+
+        if (!empty($errors)) {
+            throw new Exception(
+                'Não é possível excluir pessoa. ' . implode(' ', $errors)
+            );
+        }
+    }
+
+    protected function hasActiveRelation($pessoa, $relation)
+    {
+        return match($relation) {
+            'enderecos' => $pessoa->enderecos->isNotEmpty(),
+            'lotacoes' => $pessoa->lotacoes->isNotEmpty(),
+            'servidores_efetivos' => $pessoa->servidoresEfetivos->isNotEmpty(),
+            'servidores_temporarios' => $pessoa->servidoresTemporarios->isNotEmpty(),
+            default => (bool) $pessoa->$relation
+        };
+    }
+
+    protected function getRelationMessage($relation)
+    {
+        $messages = [
+            'enderecos' => 'Possui endereços vinculados.',
+            'lotacoes' => 'Possui lotações ativas.',
+            'servidorEfetivo' => 'É servidor efetivo.',
+            'servidorTemporario' => 'É servidor temporário.'
+        ];
+
+        return $messages[$relation] ?? 'Possui relacionamentos ativos.';
+    }
+ 
 }

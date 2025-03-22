@@ -128,11 +128,15 @@
                                     },
                                     "end_logradouro": {
                                         "type": "string",
-                                        "example": "Gustavo da Silveira"
+                                        "example": "Silviano Brandão"
                                     },
                                     "end_numero": {
                                         "type": "integer",
                                         "example": "1000"
+                                    },
+                                    "end_complemento": {
+                                        "type": "string",
+                                        "example": "Bloco E, 50 apartamento 303"
                                     },
                                     "end_bairro": {
                                         "type": "string",
@@ -303,6 +307,7 @@
                                     "end_tipo_logradouro",
                                     "end_logradouro",
                                     "end_numero",
+                                    "end_complemento",
                                     "end_bairro"
                                 ],
                                 "properties": {
@@ -321,6 +326,10 @@
                                     "end_numero": {
                                         "type": "integer",
                                         "example": "1000"
+                                    },
+                                    "end_complemento": {
+                                        "type": "string",
+                                        "example": "Bloco E, 50 apartamento 303"
                                     },
                                     "end_bairro": {
                                         "type": "string",
@@ -1380,27 +1389,82 @@
                 "tags": [
                     "Servidor Efetivo"
                 ],
-                "summary": "Cria uma nova servidor efetivo",
-                "description": "Registra um novo servidor efetivo no banco de dados.",
+                "summary": "Cria um servidor efetivo",
+                "description": "Registra um servidor efetivo no banco de dados.",
                 "operationId": "db3aca000330b5d6d5334b33a2b8f38c",
                 "requestBody": {
-                    "description": "Dados necessários para criar um novo servidor efetivo",
+                    "description": "Dados necessários para criar um servidor efetivo",
                     "required": true,
                     "content": {
                         "application/json": {
                             "schema": {
                                 "required": [
-                                    "pes_id",
-                                    "se_matricula"
+                                    "pes_nome",
+                                    "pes_cpf",
+                                    "se_matricula",
+                                    "pes_data_nascimento",
+                                    "pes_sexo",
+                                    "pes_mae",
+                                    "pes_pai",
+                                    "cid_id",
+                                    "end_tipo_logradouro",
+                                    "end_logradouro",
+                                    "end_numero",
+                                    "end_bairro"
                                 ],
                                 "properties": {
-                                    "pes_id": {
-                                        "type": "integer",
-                                        "example": "2"
+                                    "pes_nome": {
+                                        "type": "string",
+                                        "example": "João da Silva"
+                                    },
+                                    "pes_cpf": {
+                                        "type": "string",
+                                        "example": "111.222.333-44"
                                     },
                                     "se_matricula": {
                                         "type": "string",
                                         "example": "2003456788467"
+                                    },
+                                    "pes_data_nascimento": {
+                                        "type": "string",
+                                        "format": "date-time",
+                                        "example": "1978-08-23"
+                                    },
+                                    "pes_sexo": {
+                                        "type": "string",
+                                        "example": "Masculino"
+                                    },
+                                    "pes_mae": {
+                                        "type": "string",
+                                        "example": "Maria Aparecida da Silva"
+                                    },
+                                    "pes_pai": {
+                                        "type": "string",
+                                        "example": "Cícero Joaquim da Silva"
+                                    },
+                                    "cid_id": {
+                                        "type": "integer",
+                                        "example": "1"
+                                    },
+                                    "end_tipo_logradouro": {
+                                        "type": "string",
+                                        "example": "Avenida"
+                                    },
+                                    "end_logradouro": {
+                                        "type": "string",
+                                        "example": "Silviano Brandão"
+                                    },
+                                    "end_numero": {
+                                        "type": "integer",
+                                        "example": "1000"
+                                    },
+                                    "end_complemento": {
+                                        "type": "string",
+                                        "example": "Bloco E, 50 apartamento 303"
+                                    },
+                                    "end_bairro": {
+                                        "type": "string",
+                                        "example": "Horto Florestal"
                                     }
                                 },
                                 "type": "object"
@@ -1410,7 +1474,7 @@
                 },
                 "responses": {
                     "201": {
-                        "description": "Servidor Efetivo criado com sucesso",
+                        "description": "Pessoa criado com sucesso",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -1421,10 +1485,10 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "Servidor Efetivo criado com sucesso."
+                                            "example": "Pessoa criado com sucesso."
                                         },
                                         "data": {
-                                            "$ref": "#/components/schemas/ServidorEfetivo"
+                                            "$ref": "#/components/schemas/Pessoas"
                                         }
                                     },
                                     "type": "object"
@@ -1433,14 +1497,14 @@
                         }
                     },
                     "500": {
-                        "description": "Erro ao criar o servidor efetivo",
+                        "description": "Erro ao criar o pessoa",
                         "content": {
                             "application/json": {
                                 "schema": {
                                     "properties": {
                                         "error": {
                                             "type": "string",
-                                            "example": "Erro ao criar o servidor efetivo."
+                                            "example": "Erro ao criar o "
                                         }
                                     },
                                     "type": "object"
@@ -1783,33 +1847,17 @@
                         "application/json": {
                             "schema": {
                                 "required": [
-                                    "pes_nome",
-                                    "pes_data_nascimento",
-                                    "pes_sexo",
-                                    "pes_mae",
-                                    "pes_pai"
+                                    "unid_nome",
+                                    "unid_sigla"
                                 ],
                                 "properties": {
-                                    "pes_nome": {
+                                    "unid_nome": {
                                         "type": "string",
-                                        "example": "João da Silva"
+                                        "example": "Secretaria de Planejamento e Gestão"
                                     },
-                                    "pes_data_nascimento": {
+                                    "unid_sigla": {
                                         "type": "string",
-                                        "format": "date-time",
-                                        "example": "1978-08-23"
-                                    },
-                                    "pes_sexo": {
-                                        "type": "string",
-                                        "example": "Masculino"
-                                    },
-                                    "pes_mae": {
-                                        "type": "string",
-                                        "example": "Maria Aparecida da Silva"
-                                    },
-                                    "pes_pai": {
-                                        "type": "string",
-                                        "example": "Cícero Joaquim da Silva"
+                                        "example": "SEPLAG"
                                     }
                                 },
                                 "type": "object"
@@ -1972,33 +2020,17 @@
                         "application/json": {
                             "schema": {
                                 "required": [
-                                    "pes_nome",
-                                    "pes_data_nascimento",
-                                    "pes_sexo",
-                                    "pes_mae",
-                                    "pes_pai"
+                                    "unid_nome",
+                                    "unid_sigla"
                                 ],
                                 "properties": {
-                                    "pes_nome": {
+                                    "unid_nome": {
                                         "type": "string",
-                                        "example": "João da Silva"
+                                        "example": "Secretaria de Planejamento e Gestão"
                                     },
-                                    "pes_data_nascimento": {
+                                    "unid_sigla": {
                                         "type": "string",
-                                        "format": "date",
-                                        "example": "1978-08-23"
-                                    },
-                                    "pes_sexo": {
-                                        "type": "string",
-                                        "example": "Masculino"
-                                    },
-                                    "pes_mae": {
-                                        "type": "string",
-                                        "example": "Maria Aparecida da Silva"
-                                    },
-                                    "pes_pai": {
-                                        "type": "string",
-                                        "example": "Cícero Joaquim da Silva"
+                                        "example": "SEPLAG"
                                     }
                                 },
                                 "type": "object"
@@ -2152,6 +2184,7 @@
                     "end_tipo_logradouro",
                     "end_logradouro",
                     "end_numero",
+                    "end_complemento",
                     "end_bairro"
                 ],
                 "properties": {
@@ -2179,6 +2212,11 @@
                         "description": "Número do logradouro",
                         "type": "integer",
                         "example": "1000"
+                    },
+                    "end_complemento": {
+                        "description": "Descricão do complemento do logradouro",
+                        "type": "string",
+                        "example": "Bloco E, 50 apartamento 303"
                     },
                     "end_bairro": {
                         "description": "Bairro do logradouro",

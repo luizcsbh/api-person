@@ -2,9 +2,7 @@
 
 namespace App\Repositories\Eloquent;
 
-use Exception;
 use App\Models\Lotacao;
-use Illuminate\Support\Facades\DB;
 use App\Repositories\LotacaoRepositoryInterface;
 use Illuminate\Pagination\LengthAwarePaginator;
 
@@ -35,48 +33,21 @@ class LotacaoRepository implements LotacaoRepositoryInterface
 
     public function create(array $data)
     {
-        try {
-            DB::beginTransaction();
-            $lotacao = $this->model->create($data);
-            DB::commit();
-            return $lotacao;
-        } catch (Exception $e) {
-            DB::rollBack();
-            throw $e;
-        }
+        return $this->model->create($data);     
     }
 
     public function update(array $data, $id)
     {
-        try {
-            DB::beginTransaction();
-            $lotacao = $this->model->find($id);
-            if(!$lotacao) {
-                throw new Exception('Lotação não encontrada.');
-            }
-            $lotacao->update($data);
-            DB::commit();
-            return $lotacao;
-        } catch (Exception $e) {
-            DB::rollBack();
-            throw $e;
-        }
+        return $this->model->findOrFail($id)->update($data, $id);
+    }
+
+    public function findWithRelations($id, array $relations)
+    {
+        return $this->model->with($relations)->find($id);
     }
 
     public function delete($id)
     {
-        try {
-            DB::beginTransaction();
-            $lotacao = $this->model->find($id);
-            if(!$lotacao) {
-                throw new Exception('Lotação não encontrada.');
-            }
-            $lotacao->delete();
-            DB::commit();
-            return $lotacao;
-        } catch (Exception $e) {
-            DB::rollBack();
-            throw $e;
-        }
+        return $this->model->findOrFail($id)->delete();
     }
 }
