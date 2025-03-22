@@ -2084,14 +2084,14 @@
                 "tags": [
                     "Unidade"
                 ],
-                "summary": "Exclui um unidade",
-                "description": "Exclui um unidade do banco de dados com base no ID fornecido.",
+                "summary": "Exclui uma unidade",
+                "description": "Exclui uma unidade do banco de dados com base no ID fornecido.",
                 "operationId": "efb6a548f741ea9aaf450b8481998ce7",
                 "parameters": [
                     {
                         "name": "id",
                         "in": "path",
-                        "description": "ID da unidade a ser excluído",
+                        "description": "ID da unidade a ser excluída",
                         "required": true,
                         "schema": {
                             "type": "integer",
@@ -2101,7 +2101,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Unidade excluído com sucesso",
+                        "description": "Unidade excluída com sucesso",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -2112,7 +2112,7 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "Unidade excluído com sucesso."
+                                            "example": "Unidade excluída com sucesso."
                                         }
                                     },
                                     "type": "object"
@@ -2120,8 +2120,8 @@
                             }
                         }
                     },
-                    "500": {
-                        "description": "Erro ao excluir o unidade",
+                    "404": {
+                        "description": "Unidade não encontrada",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -2132,11 +2132,47 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "Erro ao excluir o unidade."
+                                            "example": "Unidade não encontrada."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Erro ao excluir a unidade devido a dependências",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
                                         },
-                                        "error": {
+                                        "message": {
                                             "type": "string",
-                                            "example": "Detalhes do erro."
+                                            "example": "Erro ao deletar a unidade. Possivelmente há dependências associadas."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Erro interno ao excluir a unidade",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Ocorreu um erro inesperado ao deletar a unidade."
                                         }
                                     },
                                     "type": "object"

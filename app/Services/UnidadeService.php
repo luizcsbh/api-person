@@ -2,17 +2,21 @@
 
 namespace App\Services;
 
+use App\Models\Unidade;
 use Exception;
 use App\Repositories\UnidadeRepositoryInterface;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\DB;
 
 class UnidadeService
 {
-    protected  $unidadeRepository;
+    protected $unidadeRepository;
+
 
     public function __construct(UnidadeRepositoryInterface $unidadeRepository)
     {
         $this->unidadeRepository = $unidadeRepository;
+        
     }
     /**
      * Retorna todas as relações Unidade cadastradas.
@@ -21,9 +25,10 @@ class UnidadeService
      */
     public function getAllUnidades()
     {
-        return $this->unidadeRepository->all();
+        return DB::transaction(function () {
+            return $this->unidadeRepository->all();
+        });
     }
-
     /**
      * Retorna todas as relações unidades cadastradas com paginacao.
      *
@@ -45,7 +50,7 @@ class UnidadeService
     {
         $unidade = $this->unidadeRepository->findById($id);
         if (!$unidade) {
-            throw new Exception('Unidade não encontrado.');
+            throw new ModelNotFoundException('Unidade não encontrado.');
         }
         return $unidade;
     }
@@ -84,12 +89,14 @@ class UnidadeService
      */
     public function updateUnidade(array $data, int $id)
     {
+        DB::beginTransaction();
+
         try {
-            DB::beginTransaction();
+            
             $unidade = $this->unidadeRepository->findById($id);
             
             if (!$unidade) {
-                throw new Exception("Erro: Unidade não encontrada!");
+                throw new ModelNotFoundException("Erro: Unidade não encontrada!");
             }
     
             $unidade->update($data);
@@ -109,27 +116,51 @@ class UnidadeService
      * @param int $id Identificador da relação Unidade a ser excluída.
      * @return bool True se a exclusão for bem-sucedida, False caso contrário.
      */    
-    public function deleteUnidade(int $id)
-    {
-        DB::beginTransaction(); // Inicia a transação
+    
+     public function deleteUnidade(int $id): void
+     {
+        DB::beginTransaction();
 
         try {
-            
+     
             $unidade = $this->unidadeRepository->findById($id);
 
             if (!$unidade) {
-                throw new Exception('Erro: Unidade não encontrada!');        
+                throw new ModelNotFoundException('Unidade não encontrada!');
             }
 
-            $unidade->delete($id);
+            $this->checkDependencies($unidade);
+            $unidade->delete();
+            DB::commit();
 
-            DB::commit(); 
+        } catch (ModelNotFoundException $e) {
+            DB::rollBack();
+            throw $e; 
 
-            return $unidade;
+        } catch (\Exception $e) {
+            DB::rollBack();
+            throw new \Exception('Erro ao excluir a unidade: ' . $e->getMessage());
+        }
+    }
 
-        } catch (Exception $e) {
-            DB::rollBack(); 
-            throw new Exception('Falha ao deletar unidade: ' . $e->getMessage());
+    /**
+     * Verifica se existem dependências associadas a uma unidade, como endereços e lotações.
+     *
+     * @param \App\Models\Unidade $unidade A unidade que será verificada quanto a dependências.
+     * 
+     * @throws \Exception Se a unidade tiver endereços ou lotações associadas, uma exceção será lançada 
+     *                    com uma mensagem informando qual tipo de dependência está impedindo a exclusão.
+     * 
+     * @return void
+     */
+    public function checkDependencies(Unidade $unidade)
+    {
+        if ($unidade->enderecos()->exists()) {
+            throw new Exception('Não é possível excluir a unidade. Existem endereços associados a ela.');
+        }
+
+        if ($unidade->lotacoes()->exists()) {
+            throw new Exception('Não é possível excluir a unidade. Existem lotações associadas a ela.');
         }
     }
 

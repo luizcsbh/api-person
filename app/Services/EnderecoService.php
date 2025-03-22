@@ -2,8 +2,10 @@
 
 namespace App\Services;
 
+use App\Models\Endereco;
 use Exception;
 use App\Repositories\EnderecoRepositoryInterface;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\DB;
 
 class EnderecoService
@@ -21,7 +23,9 @@ class EnderecoService
      */
     public function getAllEnderecos()
     {
-        return $this->enderecoRepository->all();
+        return DB::transaction(function () {
+            return $this->enderecoRepository->all();
+        });
     }
 
     /**
@@ -112,7 +116,7 @@ class EnderecoService
      * @return bool True se a exclusão for bem-sucedida, False caso contrário.
      */    public function deleteEndereco($id)
     {
-                DB::beginTransaction(); // Inicia a transação
+        DB::beginTransaction(); // Inicia a transação
 
         try {
             
@@ -122,15 +126,41 @@ class EnderecoService
                 throw new Exception('Erro: Endereço não encontrada!');        
             }
 
+            $this->checkDependencies($endereco);
             $endereco->delete($id);
-
             DB::commit(); 
 
-            return $endereco;
-
-        } catch (Exception $e) {
+        } catch (ModelNotFoundException $e) {
             DB::rollBack(); 
-            throw new Exception('Falha ao deletar endereço: ' . $e->getMessage());
+            throw $e;
+        } catch (\Exception $e) {
+            DB::rollBack();
+            throw new \Exception('Erro ao excluir o endereço: ' . $e->getMessage());
+        }
+    }
+
+        /**
+     * Verifica se existem dependências associadas a um endereço, como endereços e lotações.
+     *
+     * @param \App\Models\Endereco $endereco O endereco que será verificada quanto a dependências.
+     * 
+     * @throws \Exception Se endereço tiver pessoas, unidades ou cidades associadas, uma exceção será lançada 
+     *                    com uma mensagem informando qual tipo de dependência está impedindo a exclusão.
+     * 
+     * @return void
+     */
+    public function checkDependencies(Endereco $endereco)
+    {
+        if ($endereco->pessoas()->exists()) {
+            throw new Exception('Não é possível excluir o endereço. Existem pesooas associados a ela.');
+        }
+
+        if ($endereco->unidades()->exists()) {
+            throw new Exception('Não é possível excluir o endereço. Existem unidades associadas a ela.');
+        }
+
+        if ($endereco->cidades()->exists()) {
+            throw new Exception('Não é possível excluir o endereço. Existem cidades associadas a ela.');
         }
     }
 }

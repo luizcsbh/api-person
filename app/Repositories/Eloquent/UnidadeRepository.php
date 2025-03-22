@@ -41,11 +41,6 @@ class UnidadeRepository implements UnidadeRepositoryInterface
         return $this->model->update($data);
     }
 
-    public function findWithRelations($id, array $relations)
-    {
-        return $this->model->with($relations)->find($id);
-    }
-
     public function delete($id)
     {
         return $this->model->findOrFail($id)->delete();

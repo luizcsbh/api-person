@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Http\Requests\Endereco\EnderecoRequest;
 use App\Http\Resources\EnderecoResource;
 use App\Services\EnderecoService;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\Response;
 use Illuminate\Http\Request;
 
@@ -62,7 +64,7 @@ class EnderecoController extends Controller
             if ($enderecos->total() === 0) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Nenhuma endereço encontrado',
+                    'message' => 'Nenhum endereço encontrado!',
                     'data' => []
                 ], Response::HTTP_NOT_FOUND);
             }
@@ -70,7 +72,7 @@ class EnderecoController extends Controller
             return EnderecoResource::collection($enderecos)
                 ->additional([
                     'success' => true,
-                    'message' => 'Lista de endereços recuperada com sucesso'
+                    'message' => 'Lista de endereços recuperada com sucesso.'
                 ],Response::HTTP_OK);
     
         } catch (\Exception $e) {
@@ -130,13 +132,13 @@ class EnderecoController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => 'Endereço criada com sucesso',
+                'message' => 'Endereço criada com sucesso.',
                 'data' => $Endereco
             ], Response::HTTP_CREATED);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Erro ao criar Endereço',
+                'message' => 'Erro ao criar endereço!',
                 'error' => $e->getMessage()
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
@@ -205,7 +207,7 @@ class EnderecoController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Erro ao buscar Endereço.',
+                'message' => 'Erro ao buscar Endereço!',
                 'error' => $e->getMessage()
             ], Response::HTTP_NOT_FOUND);
         }
@@ -260,19 +262,28 @@ class EnderecoController extends Controller
     public function update(EnderecoRequest $request, string $id)
     {
         try {
-
-            $validateData = $request->validated();
-            $Endereco = $this->enderecoService->updateEndereco($validateData, $id);
-
+         
+            $validatedData = $request->validated();
+    
+            $endereco = $this->enderecoService->updateEndereco($validatedData, $id);
+    
+            if (!$endereco ) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Erro ao atualizar endereço : Endereço  não encontrada!'
+                ], Response::HTTP_NOT_FOUND);
+            }
+    
             return response()->json([
                 'success' => true,
-                'message' => 'Endereco atualizada com sucesso',
-                'data' => new EnderecoResource($Endereco)
+                'message' => 'Endereco  atualizada com sucesso.',
+                'data' => new EnderecoResource($endereco )
             ], Response::HTTP_OK);
+    
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Erro ao atualizar Endereco',
+                'message' => 'Erro ao atualizar endereco! ',
                 'error' => $e->getMessage()
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
@@ -314,19 +325,30 @@ class EnderecoController extends Controller
      */
     public function destroy(string $id)
     {
-        try{
-            
+        try {
             $this->enderecoService->deleteEndereco($id);
 
             return response()->json([
                 'success' => true,
-                'message' => 'Endereço excluída com sucesso'
+                'message' => 'Endereço excluído com sucesso.'
             ], Response::HTTP_OK);
+
+        } catch (ModelNotFoundException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], Response::HTTP_NOT_FOUND);
+
+        } catch (QueryException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Erro ao deletar o endereço. Possivelmente há dependências associadas.'
+            ], Response::HTTP_BAD_REQUEST);
+
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Erro ao deletar Endereço',
-                'error' => $e->getMessage()
+                'message' => 'Ocorreu um erro inesperado ao deletar o endereço.'
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }

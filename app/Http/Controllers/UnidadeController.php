@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Http\Requests\Unidade\UnidadeRequest;
 use App\Http\Resources\UnidadeResource;
 use App\Services\UnidadeService;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\Response;
 use Illuminate\Http\Request;
 class UnidadeController extends Controller
@@ -61,15 +63,15 @@ class UnidadeController extends Controller
             if ($unidade->total() === 0) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Nenhuma unidade encontrada',
+                    'message' => 'Nenhuma unidade encontrada!',
                     'data' => []
                 ], Response::HTTP_NOT_FOUND);
             }
-    
+
             return UnidadeResource::collection($unidade)
                 ->additional([
                     'success' => true,
-                    'message' => 'Lista de unidades recuperada com sucesso'
+                    'message' => 'Lista de unidades recuperada com sucesso.'
                 ],Response::HTTP_OK);
     
         } catch (\Exception $e) {
@@ -125,13 +127,13 @@ class UnidadeController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => 'Unidade criada com sucesso',
+                'message' => 'Unidade criada com sucesso.',
                 'data' => $unidade
             ], Response::HTTP_CREATED);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Erro ao criar unidade',
+                'message' => 'Erro ao criar unidade!',
                 'error' => $e->getMessage()
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
@@ -189,7 +191,7 @@ class UnidadeController extends Controller
             if(!$unidade) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Unidade não encontrada'
+                    'message' => 'Unidade não encontrada!'
                 ], Response::HTTP_NOT_FOUND);
             }
 
@@ -200,7 +202,7 @@ class UnidadeController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Erro ao buscar unidade',
+                'message' => 'Erro ao buscar unidade!',
                 'error' => $e->getMessage()
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
@@ -259,20 +261,20 @@ class UnidadeController extends Controller
             if (!$unidade) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Erro ao atualizar unidade: Unidade não encontrada'
+                    'message' => 'Erro ao atualizar unidade: Unidade não encontrada!'
                 ], Response::HTTP_NOT_FOUND);
             }
     
             return response()->json([
                 'success' => true,
-                'message' => 'Unidade atualizada com sucesso',
+                'message' => 'Unidade atualizada com sucesso.',
                 'data' => new UnidadeResource($unidade)
             ], Response::HTTP_OK);
     
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Erro ao atualizar unidade',
+                'message' => 'Erro ao atualizar unidade.',
                 'error' => $e->getMessage()
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
@@ -281,52 +283,80 @@ class UnidadeController extends Controller
     /**
      * @OA\Delete(
      *     path="/unidades/{id}",
-     *     summary="Exclui um unidade",
-     *     description="Exclui um unidade do banco de dados com base no ID fornecido.",
+     *     summary="Exclui uma unidade",
+     *     description="Exclui uma unidade do banco de dados com base no ID fornecido.",
      *     tags={"Unidade"},
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
      *         required=true,
-     *         description="ID da unidade a ser excluído",
+     *         description="ID da unidade a ser excluída",
      *         @OA\Schema(type="integer", example=1)
      *     ),
      *     @OA\Response(
      *         response=200,
-     *         description="Unidade excluído com sucesso",
+     *         description="Unidade excluída com sucesso",
      *         @OA\JsonContent(
      *             type="object",
      *             @OA\Property(property="success", type="boolean", example=true),
-     *             @OA\Property(property="message", type="string", example="Unidade excluído com sucesso.")
+     *             @OA\Property(property="message", type="string", example="Unidade excluída com sucesso.")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Unidade não encontrada",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="success", type="boolean", example=false),
+     *             @OA\Property(property="message", type="string", example="Unidade não encontrada.")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="Erro ao excluir a unidade devido a dependências",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="success", type="boolean", example=false),
+     *             @OA\Property(property="message", type="string", example="Erro ao deletar a unidade. Possivelmente há dependências associadas.")
      *         )
      *     ),
      *     @OA\Response(
      *         response=500,
-     *         description="Erro ao excluir o unidade",
+     *         description="Erro interno ao excluir a unidade",
      *         @OA\JsonContent(
      *             type="object",
      *             @OA\Property(property="success", type="boolean", example=false),
-     *             @OA\Property(property="message", type="string", example="Erro ao excluir o unidade."),
-     *             @OA\Property(property="error", type="string", example="Detalhes do erro.")
+     *             @OA\Property(property="message", type="string", example="Ocorreu um erro inesperado ao deletar a unidade.")
      *         )
      *     )
      * )
      */
     public function destroy(string $id)
     {
-        try{
-            
+        try {
             $this->unidadeService->deleteUnidade($id);
 
             return response()->json([
                 'success' => true,
-                'message' => 'Unidade excluída com sucesso'
+                'message' => 'Unidade excluída com sucesso.'
             ], Response::HTTP_OK);
+
+        } catch (ModelNotFoundException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], Response::HTTP_NOT_FOUND);
+
+        } catch (QueryException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Erro ao deletar a unidade. Possivelmente há dependências associadas.'
+            ], Response::HTTP_BAD_REQUEST);
+
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Erro ao deletar unidade',
-                'error' => $e->getMessage()
+                'message' => 'Ocorreu um erro inesperado ao deletar a unidade.'
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
