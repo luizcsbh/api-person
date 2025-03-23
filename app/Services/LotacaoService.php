@@ -141,7 +141,7 @@ class LotacaoService
     }
 
     /**
-     * Verifica se existem dependências associadas a uma √, como endereços e lotações.
+     * Verifica se existem dependências associadas a uma lotação, como endereços e lotações.
      *
      * @param \App\Models\Lotacao $lotacao A lotação que será verificada quanto a dependências.
      * 

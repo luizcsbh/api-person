@@ -114,7 +114,8 @@ class EnderecoService
      *
      * @param int $id Identificador da relação Endereço a ser excluída.
      * @return bool True se a exclusão for bem-sucedida, False caso contrário.
-     */    public function deleteEndereco($id)
+     */ 
+    public function deleteEndereco($id)
     {
         DB::beginTransaction(); // Inicia a transação
 
@@ -127,7 +128,7 @@ class EnderecoService
             }
 
             $this->checkDependencies($endereco);
-            $endereco->delete($id);
+            $endereco->delete();
             DB::commit(); 
 
         } catch (ModelNotFoundException $e) {
@@ -140,7 +141,7 @@ class EnderecoService
     }
 
         /**
-     * Verifica se existem dependências associadas a um endereço, como endereços e lotações.
+     * Verifica se existem dependências associadas a um pessoas, como unidades e cidades.
      *
      * @param \App\Models\Endereco $endereco O endereco que será verificada quanto a dependências.
      * 
@@ -151,10 +152,7 @@ class EnderecoService
      */
     public function checkDependencies(Endereco $endereco)
     {
-        if ($endereco->pessoas()->exists()) {
-            throw new Exception('Não é possível excluir o endereço. Existem pesooas associados a ela.');
-        }
-
+       
         if ($endereco->unidades()->exists()) {
             throw new Exception('Não é possível excluir o endereço. Existem unidades associadas a ela.');
         }

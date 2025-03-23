@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\ApiResponse;
 use App\Http\Requests\Unidade\UnidadeRequest;
 use App\Http\Resources\UnidadeResource;
 use App\Services\UnidadeService;
@@ -334,30 +335,17 @@ class UnidadeController extends Controller
     public function destroy(string $id)
     {
         try {
+            // Chama o serviço para excluir a unidade
             $this->unidadeService->deleteUnidade($id);
-
+    
             return response()->json([
                 'success' => true,
                 'message' => 'Unidade excluída com sucesso.'
             ], Response::HTTP_OK);
-
-        } catch (ModelNotFoundException $e) {
-            return response()->json([
-                'success' => false,
-                'message' => $e->getMessage()
-            ], Response::HTTP_NOT_FOUND);
-
-        } catch (QueryException $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Erro ao deletar a unidade. Possivelmente há dependências associadas.'
-            ], Response::HTTP_BAD_REQUEST);
-
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Ocorreu um erro inesperado ao deletar a unidade.'
-            ], Response::HTTP_INTERNAL_SERVER_ERROR);
+    
+        }  catch (\Exception $e) {
+            return ApiResponse::handleException($e);
         }
     }
+
 }

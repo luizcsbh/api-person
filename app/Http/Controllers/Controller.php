@@ -27,7 +27,7 @@ use Illuminate\Routing\Controller as BaseController;
  * )
  * 
  * @OA\Tag(
- *     name="Pessoas",
+ *     name="Pessoa",
  *     description="Gerenciamento das pessoas"
  * ),
  * @OA\Tag(

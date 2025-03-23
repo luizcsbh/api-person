@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\ApiResponse;
 use App\Http\Requests\Lotacao\LotacaoRequest;
 use App\Http\Resources\LotacaoResource;
 use App\Services\LotacaoService;
@@ -342,6 +343,7 @@ class LotacaoController extends Controller
     public function destroy(string $id)
     {
         try {
+            
             $this->lotacaoService->deleteLotacao($id);
 
             return response()->json([
@@ -349,23 +351,8 @@ class LotacaoController extends Controller
                 'message' => 'Lotação excluída com sucesso.'
             ], Response::HTTP_OK);
 
-        } catch (ModelNotFoundException $e) {
-            return response()->json([
-                'success' => false,
-                'message' => $e->getMessage()
-            ], Response::HTTP_NOT_FOUND);
-
-        } catch (QueryException $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Erro ao deletar a lotação. Possivelmente há dependências associadas.'
-            ], Response::HTTP_BAD_REQUEST);
-
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Ocorreu um erro inesperado ao deletar a Lotação.'
-            ], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }  catch (\Exception $e) {
+            return ApiResponse::handleException($e);
         }
     }
 }

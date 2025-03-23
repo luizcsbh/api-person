@@ -16,6 +16,8 @@ class CidadeFactory extends Factory
         return [
             'cid_nome' => $this->faker->city(),
             'cid_uf' => $this->faker->stateAbbr(),
+            'created_at' => now(),
+            'updated_at' => now(),
         ];
     }
 }

@@ -38,7 +38,7 @@ class ServidorEfetivo extends Model
 
     public function pessoa()
     {
-        return $this->belongsTo(Pessoas::class, 'pes_id', 'pes_id');
+        return $this->belongsTo(Pessoa::class, 'pes_id', 'pes_id');
     }
     
     public function lotacoes()

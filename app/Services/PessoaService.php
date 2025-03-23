@@ -2,20 +2,15 @@
 
 namespace App\Services;
 
+use App\Models\Pessoas;
 use Exception;
 use App\Repositories\PessoaRepositoryInterface;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\DB;
 
 class PessoaService
 {
     protected $pessoaRepository;
-
-    protected $checkRelations = [
-        'enderecos',
-        'lotacoes',
-        'servidorEfetivo',
-        'servidorTemporario'
-    ];
 
     public function __construct(PessoaRepositoryInterface $pessoaRepository)
     {
@@ -28,7 +23,9 @@ class PessoaService
      */
     public function getAllPessoas()
     {
-        return $this->pessoaRepository->all();
+        return DB::transaction(function () {
+            return $this->pessoaRepository->all();
+        });
     }
 
     /**
@@ -50,11 +47,11 @@ class PessoaService
      */
     public function getPessoaById($id)
     {
-        $Pessoa = $this->pessoaRepository->findById($id);
-        if (!$Pessoa) {
-            throw new Exception('Pessoa não encontrado.');
+        $pessoa = $this->pessoaRepository->findById($id);
+        if (!$pessoa) {
+            throw new ModelNotFoundException('Pessoa não encontrado.');
         }
-        return $Pessoa;
+        return $pessoa;
     }
 
     /**
@@ -70,7 +67,9 @@ class PessoaService
         try {
             
             $pessoa = $this->pessoaRepository->create($data);
+
             DB::commit(); 
+
             return $pessoa; 
 
         } catch (\Exception $e) {
@@ -78,7 +77,6 @@ class PessoaService
             throw new Exception("Erro ao criar pessoa: " . $e->getMessage());
         }
     }
-
     /**
      * Atualiza uma relação Pessoa existente.
      *
@@ -96,7 +94,7 @@ class PessoaService
             $pessoa = $this->pessoaRepository->findById($id);
 
             if (!$pessoa) {
-                throw new Exception('Pessoa não encontrada!');
+                throw new Exception('Erro: Pessoa não encontrada!');
             }
     
             $pessoa->update($data);
@@ -121,70 +119,60 @@ class PessoaService
         DB::beginTransaction();
             
         try {
-            $pessoa = $this->pessoaRepository->findWithRelations($id, $this->checkRelations);
+
+            $pessoa = $this->pessoaRepository->findById($id);
             
             if (!$pessoa) {
-                throw new Exception('Pessoa não encontrada.');
+                throw new Exception('Pessoa não encontrada!');
             }
 
-            $this->checkRelations($pessoa);
-            
-            $this->pessoaRepository->delete($id);
-            
+            $this->checkDependencies($pessoa);
+            $pessoa->delete();
             DB::commit();
-            
-            return [
-                'success' => true,
-                'message' => 'Pessoa excluída com sucesso'
-            ];
-
-        } catch (Exception $e) {
-            DB::rollBack();
-            return [
-                'success' => false,
-                'message' => $e->getMessage()
-            ];
-        }
-    }
-
-    protected function checkRelations($pessoa)
-    {
-        $errors = [];
         
-        foreach ($this->checkRelations as $relation) {
-            if ($this->hasActiveRelation($pessoa, $relation)) {
-                $errors[] = $this->getRelationMessage($relation);
-            }
-        }
-
-        if (!empty($errors)) {
-            throw new Exception(
-                'Não é possível excluir pessoa. ' . implode(' ', $errors)
-            );
+        }catch (ModelNotFoundException $e){
+            DB::rollBack();
+            throw $e;
+        
+        } catch (\Exception $e) {
+            DB::rollBack();
+            throw new \Exception('Erro ao excluir a pessoa: '. $e->getMessage());
         }
     }
 
-    protected function hasActiveRelation($pessoa, $relation)
+    /**
+     * Verifica se existem dependências associadas a uma pessoa como fotos, lotações, servidores temporarios,
+     *                     servidores efetivos e endereços.
+     *
+     * @param \App\Models\Pessoa $pessoa A unidade que será verificada quanto a dependências.
+     * 
+     * @throws \Exception Se a pessoa tiver fotos, lotações, sevidores temporarios, efetivos ou endereços
+     *                     associadas, uma exceção será lançada com uma mensagem informando qual tipo de 
+     *                     dependência está impedindo a exclusão.
+     * 
+     * @return void
+     */
+    public function checkDependencies(Pessoas $pessoa)
     {
-        return match($relation) {
-            'enderecos' => $pessoa->enderecos->isNotEmpty(),
-            'lotacoes' => $pessoa->lotacoes->isNotEmpty(),
-            'servidores_efetivos' => $pessoa->servidoresEfetivos->isNotEmpty(),
-            'servidores_temporarios' => $pessoa->servidoresTemporarios->isNotEmpty(),
-            default => (bool) $pessoa->$relation
-        };
+        if ($pessoa->fotos()->exists()) {
+            throw new Exception('Não é possível excluir a pessoa. Existem fotos associados a ela.');
+        }
+
+        if ($pessoa->lotacoes()->exists()) {
+            throw new Exception('Não é possível excluir a pessoa. Existem lotações associadas a ela.');
+        }
+
+        if ($pessoa->ServidorTemporario()->exists()) {
+            throw new Exception('Não é possível excluir a pessoa. Existem servidores temporarios associadas a ela.');
+        }
+
+        if ($pessoa->servidorEfetivo()->exists()) {
+            throw new Exception('Não é possível excluir a pessoa. Existem servidor efetivo associadas a ela.');
+        }
+
+        if ($pessoa->enderecos()->exists()) {
+            throw new Exception('Não é possível excluir a pessoa. Existem endereços associados a ela.');
+        }
     }
 
-    protected function getRelationMessage($relation)
-    {
-        $messages = [
-            'enderecos' => 'Possui endereços vinculados.',
-            'lotacoes' => 'Possui lotações ativas.',
-            'servidorEfetivo' => 'É servidor efetivo.',
-            'servidorTemporario' => 'É servidor temporário.'
-        ];
-
-        return $messages[$relation] ?? 'Possui relacionamentos ativos.';
-    }
- 
 }

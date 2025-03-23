@@ -9,21 +9,23 @@ class ServidorEfetivoResource extends JsonResource
     public function toArray($request)
     {
         return [
-            'pes_id' => $this->pes_id,
-            'nome' => $this->pessoa->pes_nome,
-            'pes_cpf' => $this->pessoa->pes_cpf,
-            'matricula' => $this->se_matricula,
-            'nascimento' => $this->pessoa->pes_data_nascimento,
-            'pes_sexo' => $this->pessoa->pes_sexo,
-            'pes_mae' => $this->pessoa->pes_mae,
-            'pes_pai' => $this->pessoa->pes_pai,
-            
-            'lotacoes' => $this->pessoa->lotacoes->map(function($lotacao) {
-                return [
-                    'unidade' => $lotacao->unidade->unid_nome,
-                    'data_lotacao' => $lotacao->lot_data_lotacao
-                ];
-            })
+            'pessoa' => [
+                'id' =>  $this->pessoa->pes_id,
+                'nome' => $this->pessoa->pes_nome,
+                'cpf' => $this->pessoa->pes_cpf,
+                'matricula' => $this->se_matricula,
+                'nascimento' => $this->pessoa->pes_data_nascimento,
+                'enderecos' => $this->pessoa->enderecos->map(function($endereco) {
+                    return [
+                        'logradouro' => $endereco->end_logradouro,
+                        'numero' => $endereco->end_numero,
+                        'complemento' => $endereco->end_complemento,
+                        'bairro' => $endereco->end_bairro,
+                        'cidade_id' => $endereco->cid_id
+                    ];
+                })
+            ],
+            'criado_em' => $this->created_at->format('d/m/Y H:i')
         ];
     }
 }

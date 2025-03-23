@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\ApiResponse;
 use App\Http\Requests\Pessoa\PessoaRequest;
 use App\Http\Resources\PessoaResource;
 use App\Services\PessoaService;
@@ -22,14 +23,14 @@ class PessoaController extends Controller
      *     path="/pessoas",
      *     summary="Lista todos as pessoas",
      *     description="Retorna uma lista de pessoas armazenados no banco de dados.",
-     *     tags={"Pessoas"},
+     *     tags={"Pessoa"},
      *     @OA\Response(
      *         response=200,
      *         description="Lista de pessoas retornada com sucesso",
      *         @OA\JsonContent(
      *             type="object",
      *             @OA\Property(property="success", type="boolean", example=true),
-     *             @OA\Property(property="data", type="array", @OA\Items(ref="#/components/schemas/Pessoas"))
+     *             @OA\Property(property="data", type="array", @OA\Items(ref="#/components/schemas/Pessoa"))
      *         )
      *     ),
      *     @OA\Response(
@@ -87,7 +88,7 @@ class PessoaController extends Controller
      *     path="/pessoas",
      *     summary="Cria uma nova pessoa",
      *     description="Registra uma nova pessoa no banco de dados.",
-     *     tags={"Pessoas"},
+     *     tags={"Pessoa"},
      *     @OA\RequestBody(
      *         required=true,
      *         description="Dados necessários para criar uma nova pessoa",
@@ -108,7 +109,7 @@ class PessoaController extends Controller
      *             type="object",
      *             @OA\Property(property="success", type="boolean", example=true),
      *             @OA\Property(property="message", type="string", example="Pessoa criado com sucesso."),
-     *             @OA\Property(property="data", ref="#/components/schemas/Pessoas")
+     *             @OA\Property(property="data", ref="#/components/schemas/Pessoa")
      *         )
      *     ),
      *     @OA\Response(
@@ -147,7 +148,7 @@ class PessoaController extends Controller
      *     path="/pessoas/{id}",
      *     summary="Obtém os detalhes de uma pessoa",
      *     description="Retorna os detalhes de uma pessoa em específico pelo ID.",
-     *     tags={"Pessoas"},
+     *     tags={"Pessoa"},
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
@@ -161,7 +162,7 @@ class PessoaController extends Controller
      *         @OA\JsonContent(
      *             type="object",
      *             @OA\Property(property="success", type="boolean", example=true),
-     *             @OA\Property(property="data", ref="#/components/schemas/Pessoas")
+     *             @OA\Property(property="data", ref="#/components/schemas/Pessoa")
      *         )
      *     ),
      *     @OA\Response(
@@ -216,7 +217,7 @@ class PessoaController extends Controller
      *     path="/pessoas/{id}",
      *     summary="Atualiza uma pessoa existente",
      *     description="Atualiza os dados de uma pessoa com base no ID fornecido.",
-     *     tags={"Pessoas"},
+     *     tags={"Pessoa"},
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
@@ -244,7 +245,7 @@ class PessoaController extends Controller
      *             type="object",
      *             @OA\Property(property="success", type="boolean", example=true),
      *             @OA\Property(property="message", type="string", example="Pessoa atualizado com sucesso!"),
-     *             @OA\Property(property="data", ref="#/components/schemas/Pessoas")
+     *             @OA\Property(property="data", ref="#/components/schemas/Pessoa")
      *         )
      *     ),
      *     @OA\Response(
@@ -283,7 +284,7 @@ class PessoaController extends Controller
      *     path="/pessoas/{id}",
      *     summary="Exclui um pessoa",
      *     description="Exclui um pessoa do banco de dados com base no ID fornecido.",
-     *     tags={"Pessoas"},
+     *     tags={"Pessoa"},
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
@@ -322,12 +323,9 @@ class PessoaController extends Controller
                 'success' => true,
                 'message' => 'Pessoa excluída com sucesso'
             ], Response::HTTP_OK);
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Erro ao deletar pessoa',
-                'error' => $e->getMessage()
-            ], Response::HTTP_INTERNAL_SERVER_ERROR);
+       
+        }  catch (\Exception $e) {
+            return ApiResponse::handleException($e);
         }
     }
 }

@@ -12,7 +12,6 @@ class UnidadeService
 {
     protected $unidadeRepository;
 
-
     public function __construct(UnidadeRepositoryInterface $unidadeRepository)
     {
         $this->unidadeRepository = $unidadeRepository;
@@ -119,6 +118,7 @@ class UnidadeService
     
     public function deleteUnidade(int $id): void
     {
+        
         DB::beginTransaction();
 
         try {
@@ -155,12 +155,13 @@ class UnidadeService
      */
     public function checkDependencies(Unidade $unidade)
     {
+
         if ($unidade->enderecos()->exists()) {
-            throw new Exception('Não é possível excluir a unidade. Existem endereços associados a ela.');
+           throw new Exception('Não é possível excluir a unidade. Existem endereços associados a ela.');
         }
 
         if ($unidade->lotacoes()->exists()) {
-            throw new Exception('Não é possível excluir a unidade. Existem lotações associadas a ela.');
+           throw new Exception('Não é possível excluir a unidade. Existem lotações associadas a ela.');
         }
     }
 

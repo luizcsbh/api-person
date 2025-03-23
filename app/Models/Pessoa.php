@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 /**
  * @OA\Schema(
- *     schema="Pessoas",
+ *     schema="Pessoa",
  *     type="object",
  *     title="Pessoa",
  *     description="Modelo de Pessoa",
@@ -56,7 +56,7 @@ use Illuminate\Database\Eloquent\Model;
  *     ),
  * )
  */
-class Pessoas extends Model
+class Pessoa extends Model
 {
     use HasFactory;
 

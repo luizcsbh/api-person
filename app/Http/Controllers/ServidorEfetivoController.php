@@ -2,14 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\ApiResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use App\Services\PessoaService;
 use App\Services\EnderecoService;
 use App\Services\ServidorEfetivoService;
 use App\Http\Resources\ServidorEfetivoResource;
-use App\Http\Requests\Servidor\Efetivo\ServidorEfetivoRequest;
-use Illuminate\Support\Facades\DB;
+use App\Http\Requests\Servidor\Efetivo\StoreServidorEfetivoRequest;
+use App\Http\Requests\Servidor\Efetivo\ServidorEfetivoUpdateRequest;
+use Symfony\Component\Routing\Exception\ResourceNotFoundException;
 
 class ServidorEfetivoController extends Controller
 {
@@ -111,7 +113,7 @@ class ServidorEfetivoController extends Controller
      *             @OA\Property(property="pes_sexo", type="string", example="Masculino"),
      *             @OA\Property(property="pes_mae", type="string", example="Maria Aparecida da Silva"),
      *             @OA\Property(property="pes_pai", type="string", example="Cícero Joaquim da Silva"),
-     *             @OA\Property(property="cid_id", type="integer", example="1"),
+     *             @OA\Property(property="cid_id", type="integer", example="21"),
      *             @OA\Property(property="end_tipo_logradouro", type="string", example="Avenida"),
      *             @OA\Property(property="end_logradouro", type="string", example="Silviano Brandão"),
      *             @OA\Property(property="end_numero", type="integer", example="1000"),
@@ -126,7 +128,7 @@ class ServidorEfetivoController extends Controller
      *             type="object",
      *             @OA\Property(property="success", type="boolean", example=true),
      *             @OA\Property(property="message", type="string", example="Pessoa criado com sucesso."),
-     *             @OA\Property(property="data", ref="#/components/schemas/Pessoas")
+     *             @OA\Property(property="data", ref="#/components/schemas/Pessoa")
      *         )
      *     ),
      *     @OA\Response(
@@ -139,65 +141,33 @@ class ServidorEfetivoController extends Controller
      *     )
      * )
      */
-    public function store(ServidorEfetivoRequest $request)
+    public function store(StoreServidorEfetivoRequest $request)
     {
         try {
-            // Criar Pessoa
-            $pessoa = $this->pessoaService->createPessoa(
-                $request->only([
-                    'pes_nome',
-                    'pes_cpf',
-                    'pes_data_nascimento',
-                    'pes_sexo',
-                    'pes_mae',
-                    'pes_pai'
-                ])
-            );
-    
-            // Criar Endereço
-            $endereco = $this->enderecoService->createEndereco(
-                $request->only([
-                    'end_tipo_logradouro',
-                    'end_logradouro',
-                    'end_numero',
-                    'end_complemento',
-                    'end_bairro',
-                    'end_cep',
-                    'cid_id'
-                ])
-            );
-    
-            // Vincular endereço à pessoa
-            $pessoa->enderecos()->attach($endereco->end_id);
-    
-            // Criar Servidor Efetivo
-            $servidorEfetivo = $this->servidorEfetivoService->createServidorEfetivo([
-                'pes_id' => $pessoa->pes_id,
-                'se_matricula' => $request->se_matricula
-            ]);
-    
+            $result = $this->servidorEfetivoService->createServidorEfetivo($request->validated());
+
             return response()->json([
-                'success' => true,
-                'message' => 'Pessoa, endereço e servidor efetivo criados com sucesso.',
-                'data' => [
-                    'pessoa' => $pessoa,
-                    'endereco' => $endereco,
-                    'servidor_efetivo' => $servidorEfetivo
-                ]
+                'success'=> true,
+                'data' => $result
             ], Response::HTTP_CREATED);
-    
+
+        } catch (\DomainException $e) {
+            return response()->json([
+                'success'=> false,
+                'message'=>$e->getMessage()
+            ], Response::HTTP_UNPROCESSABLE_ENTITY);
+        
         } catch (\Exception $e) {
             return response()->json([
-                'success' => false,
-                'message' => 'Erro ao criar registros.',
-                'error' => $e->getMessage()
+                'success'=> false,
+                'message'=>  'Erro no servidor'
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
-        }
+        }   
     }
 
     /**
      * @OA\Get(
-     *     path="/servidores efetivos/{id}",
+     *     path="/servidores-efetivos/{id}",
      *     summary="Obtém os detalhes de um servidor efetivo",
      *     description="Retorna os detalhes de um servidor efetivo em específico pelo ID.",
      *     tags={"Servidor Efetivo"},
@@ -240,26 +210,21 @@ class ServidorEfetivoController extends Controller
      */
     public function show(string $id)
     {
+        
         try {
 
             $servidorEfetivo = $this->servidorEfetivoService->getServidoresEfetivosById($id);
+            return new ServidorEfetivoResource($servidorEfetivo);
 
-            if(!$servidorEfetivo) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Servidor Efetivo não encontrado!'
-                ], Response::HTTP_NOT_FOUND);
-            }
-
+        } catch (ResourceNotFoundException $e) {
             return response()->json([
-                'success' => true,
-                'data' => new ServidorEfetivoResource($servidorEfetivo)
-            ], Response::HTTP_OK);
+                'message' => $e->getMessage()
+            ], Response::HTTP_NOT_FOUND);
+        
         } catch (\Exception $e) {
+            
             return response()->json([
-                'success' => false,
-                'message' => 'Erro ao buscar servidor efetivo',
-                'error' => $e->getMessage()
+                'message' => $e->getMessage()
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
@@ -306,48 +271,24 @@ class ServidorEfetivoController extends Controller
      *     )
      * )
      */ 
-    public function update(ServidorEfetivoRequest $request, string $id)
+    public function update(ServidorEfetivoUpdateRequest $request, string $id)
     {
         try {
-
-            $servidorEfetivo = $this->servidorEfetivoService->getServidoresEfetivosById($id);
-
-            $pessoa = $this->pessoaService->updatePessoa(
-                $request->only([
-                    'pes_nome', 'pes_cpf', 'pes_data_nascimento', 'pes_sexo', 'pes_mae', 'pes_pai'
-                ]),
-                $servidorEfetivo->pes_id
+            $servidor = $this->servidorEfetivoService->updateServidor(
+                $id, 
+                $request->validated()
             );
-
-            $endereco = $pessoa->endereco()->firstOrFail();
-            $enderecoAtualizado = $this->enderecoService->updateEndereco(
-                $request->only([
-                    'end_tipo_logradouro', 'end_logradouro', 'end_numero', 'end_complemento', 'end_bairro','cid_id'
-                ]),
-                $endereco->end_id
-            );
-
-            $servidorAtualizado = $this->servidorEfetivoService->updateServidorEfetivo(
-                ['se_matricula' => $request->se_matricula],
-                $id
-            );
-
-            DB::commit();
-
+            
+            return new ServidorEfetivoResource($servidor);
+            
+        } catch (ResourceNotFoundException $e) {
             return response()->json([
-                'success' => true,
-                'message' => 'Registros atualizados com sucesso.',
-                'data' => [
-                    'pessoa' => $pessoa,
-                    'endereco' => $enderecoAtualizado,
-                    'servidores_efetivos' => $servidorAtualizado
-                ]
-            ], Response::HTTP_OK);
+                'message' => $e->getMessage()
+            ], Response::HTTP_NOT_FOUND);
+            
         } catch (\Exception $e) {
-            DB::rollBack();
             return response()->json([
-                'success' => false,
-                'message' => 'Erro ao atualizar registros:',
+                'message' => 'Erro ao atualizar registro',
                 'error' => $e->getMessage()
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
@@ -368,11 +309,29 @@ class ServidorEfetivoController extends Controller
      *     ),
      *     @OA\Response(
      *         response=200,
-     *         description="Pessoa excluído com sucesso",
+     *         description="Servidor efetivo excluído com sucesso",
      *         @OA\JsonContent(
      *             type="object",
      *             @OA\Property(property="success", type="boolean", example=true),
-     *             @OA\Property(property="message", type="string", example="Pessoa excluído com sucesso.")
+     *             @OA\Property(property="message", type="string", example="Servidor efetivo excluído com sucesso.")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Servidor efetivo não encontrado",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="success", type="boolean", example=false),
+     *             @OA\Property(property="message", type="string", example="Servidor efetivo não encontrado.")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="Erro ao excluir o servidor efetivo devido a dependências",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="success", type="boolean", example=false),
+     *             @OA\Property(property="message", type="string", example="Erro ao deletar o servidor efetivo. Possivelmente há dependências associadas.")
      *         )
      *     ),
      *     @OA\Response(
@@ -389,20 +348,16 @@ class ServidorEfetivoController extends Controller
      */
     public function destroy(string $id)
     {
-        try{
-            
+        try {
             $this->servidorEfetivoService->deleteServidorEfetivo($id);
 
             return response()->json([
                 'success' => true,
-                'message' => 'Pessoa excluída com sucesso'
+                'message' => 'Servidor efetivo excluída com sucesso.'
             ], Response::HTTP_OK);
+
         } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Erro ao deletar servidor efetivo',
-                'error' => $e->getMessage()
-            ], Response::HTTP_INTERNAL_SERVER_ERROR);
+            return ApiResponse::handleException($e);
         }
     }
 

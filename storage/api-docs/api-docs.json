@@ -958,7 +958,7 @@
         "/pessoas": {
             "get": {
                 "tags": [
-                    "Pessoas"
+                    "Pessoa"
                 ],
                 "summary": "Lista todos as pessoas",
                 "description": "Retorna uma lista de pessoas armazenados no banco de dados.",
@@ -977,7 +977,7 @@
                                         "data": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/components/schemas/Pessoas"
+                                                "$ref": "#/components/schemas/Pessoa"
                                             }
                                         }
                                     },
@@ -1034,7 +1034,7 @@
             },
             "post": {
                 "tags": [
-                    "Pessoas"
+                    "Pessoa"
                 ],
                 "summary": "Cria uma nova pessoa",
                 "description": "Registra uma nova pessoa no banco de dados.",
@@ -1101,7 +1101,7 @@
                                             "example": "Pessoa criado com sucesso."
                                         },
                                         "data": {
-                                            "$ref": "#/components/schemas/Pessoas"
+                                            "$ref": "#/components/schemas/Pessoa"
                                         }
                                     },
                                     "type": "object"
@@ -1131,7 +1131,7 @@
         "/pessoas/{id}": {
             "get": {
                 "tags": [
-                    "Pessoas"
+                    "Pessoa"
                 ],
                 "summary": "Obtém os detalhes de uma pessoa",
                 "description": "Retorna os detalhes de uma pessoa em específico pelo ID.",
@@ -1160,7 +1160,7 @@
                                             "example": true
                                         },
                                         "data": {
-                                            "$ref": "#/components/schemas/Pessoas"
+                                            "$ref": "#/components/schemas/Pessoa"
                                         }
                                     },
                                     "type": "object"
@@ -1216,7 +1216,7 @@
             },
             "put": {
                 "tags": [
-                    "Pessoas"
+                    "Pessoa"
                 ],
                 "summary": "Atualiza uma pessoa existente",
                 "description": "Atualiza os dados de uma pessoa com base no ID fornecido.",
@@ -1295,7 +1295,7 @@
                                             "example": "Pessoa atualizado com sucesso!"
                                         },
                                         "data": {
-                                            "$ref": "#/components/schemas/Pessoas"
+                                            "$ref": "#/components/schemas/Pessoa"
                                         }
                                     },
                                     "type": "object"
@@ -1323,7 +1323,7 @@
             },
             "delete": {
                 "tags": [
-                    "Pessoas"
+                    "Pessoa"
                 ],
                 "summary": "Exclui um pessoa",
                 "description": "Exclui um pessoa do banco de dados com base no ID fornecido.",
@@ -1524,7 +1524,7 @@
                                     },
                                     "cid_id": {
                                         "type": "integer",
-                                        "example": "1"
+                                        "example": "21"
                                     },
                                     "end_tipo_logradouro": {
                                         "type": "string",
@@ -1568,7 +1568,7 @@
                                             "example": "Pessoa criado com sucesso."
                                         },
                                         "data": {
-                                            "$ref": "#/components/schemas/Pessoas"
+                                            "$ref": "#/components/schemas/Pessoa"
                                         }
                                     },
                                     "type": "object"
@@ -1595,14 +1595,14 @@
                 }
             }
         },
-        "/servidores efetivos/{id}": {
+        "/servidores-efetivos/{id}": {
             "get": {
                 "tags": [
                     "Servidor Efetivo"
                 ],
                 "summary": "Obtém os detalhes de um servidor efetivo",
                 "description": "Retorna os detalhes de um servidor efetivo em específico pelo ID.",
-                "operationId": "9dfb3665cd4f5040afe1e5d805088b45",
+                "operationId": "f3308840d0b3259aaa6a16a1370f4060",
                 "parameters": [
                     {
                         "name": "id",
@@ -1680,9 +1680,7 @@
                         }
                     }
                 }
-            }
-        },
-        "/servidores-efetivos/{id}": {
+            },
             "put": {
                 "tags": [
                     "Servidor Efetivo"
@@ -1790,7 +1788,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Pessoa excluído com sucesso",
+                        "description": "Servidor efetivo excluído com sucesso",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -1801,7 +1799,47 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "Pessoa excluído com sucesso."
+                                            "example": "Servidor efetivo excluído com sucesso."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Servidor efetivo não encontrado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Servidor efetivo não encontrado."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Erro ao excluir o servidor efetivo devido a dependências",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Erro ao deletar o servidor efetivo. Possivelmente há dependências associadas."
                                         }
                                     },
                                     "type": "object"
@@ -2388,7 +2426,7 @@
                 },
                 "type": "object"
             },
-            "Pessoas": {
+            "Pessoa": {
                 "title": "Pessoa",
                 "description": "Modelo de Pessoa",
                 "required": [
@@ -2491,7 +2529,7 @@
     },
     "tags": [
         {
-            "name": "Pessoas",
+            "name": "Pessoa",
             "description": "Gerenciamento das pessoas"
         },
         {

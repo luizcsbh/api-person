@@ -2,8 +2,7 @@
 
 namespace App\Repositories\Eloquent;
 
-use Exception;
-use App\Models\Pessoas;
+use App\Models\Pessoa;
 use App\Repositories\PessoaRepositoryInterface;
 use Illuminate\Pagination\LengthAwarePaginator;
 
@@ -11,7 +10,7 @@ class PessoaRepository implements PessoaRepositoryInterface
 {
     protected $model;
 
-    public function __construct(Pessoas $model)
+    public function __construct(Pessoa $model)
     {
         $this->model = $model;
     }
@@ -32,6 +31,12 @@ class PessoaRepository implements PessoaRepositoryInterface
         return $this->model->with(['enderecos'])->find($id);
     }
 
+    public function findByIdWithRelations($id)
+    {
+        return $this->model->with(['pessoa,enderecos'])
+            ->find($id);
+    }
+
     public function create(array $data)
     {
         return $this->model->create($data);     
@@ -42,13 +47,15 @@ class PessoaRepository implements PessoaRepositoryInterface
         return $this->model->update($data);
     }
 
-    public function findWithRelations($id, array $relations)
-    {
-        return $this->model->with($relations)->find($id);
-    }
-
     public function delete($id)
     {
         return $this->model->findOrFail($id)->delete();
     }
+
+    public function attachEndereco(int $pesId, int $enderecoId)
+    {
+        $pessoa = $this->model->findOrFail($pesId);
+        $pessoa->enderecos()->attach($enderecoId);
+    }
+
 }

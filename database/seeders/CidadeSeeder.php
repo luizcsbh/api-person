@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use Carbon\Carbon;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
@@ -13,6 +14,8 @@ class CidadeSeeder extends Seeder
      */
     public function run(): void
     {
+        $timestamp = Carbon::now();
+
         $cidades = [
             // Cidades de São Paulo (SP)
             ['cid_nome' => 'São Paulo', 'cid_uf' => 'SP'],
@@ -145,8 +148,13 @@ class CidadeSeeder extends Seeder
             ['cid_nome' => 'Peixe', 'cid_uf' => 'TO'],
             ['cid_nome' => 'Goiatins', 'cid_uf' => 'TO'],
             ['cid_nome' => 'Natividade', 'cid_uf' => 'TO'],
-        
         ];
+
+         // Adiciona os timestamps em cada cidade
+         foreach ($cidades as &$cidade) {
+            $cidade['created_at'] = $timestamp;
+            $cidade['updated_at'] = $timestamp;
+        }
 
         DB::table('cidades')->insert($cidades);
     }

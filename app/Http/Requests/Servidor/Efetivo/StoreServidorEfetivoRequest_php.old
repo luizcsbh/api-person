@@ -14,46 +14,39 @@ class ServidorEfetivoRequest extends FormRequest
         return true;
     }
 
-    public function rules()
+        public function rules()
     {
         $ruleType = $this->isMethod('PUT') ? 'sometimes' : 'required';
-        
-
+    
         $rules = [
-            // Regras para Pessoa (campos obrigatórios)
+            // Regras para Pessoa
             'pes_nome' => "$ruleType|string|max:200|min:3",
             'pes_cpf' => [
                 $ruleType,
                 'string',
                 'max:14',
-                $this->isMethod('PUT') && $this->servidorEfetivo
-                    ? Rule::unique('pessoas', 'pes_cpf')->ignore($this->servidorEfetivo->pes_id, 'pes_id')
-                    : Rule::unique('pessoas', 'pes_cpf')
+                Rule::unique('pessoas', 'pes_cpf')->ignore(
+                    $this->isMethod('PUT') && $this->route('servidorEfetivo')
+                        ? $this->route('servidorEfetivo')->pes_id
+                        : null,
+                    'pes_id'
+                )
             ],
-            'pes_id' => [
+            'se_matricula' => [
                 $ruleType,
-                'exists:pessoas,pes_id',
-                new UniqueServidor,
-                function($attribute, $value, $fail) {
-                    if ($this->isMethod('PUT') && !$this->servidorEfetivo) {
-                        $fail('Registro de servidor efetivo inválido');
-                        return;
-                    }
-        
-                    $servidorTemporario = ServidorTemporario::where('pes_id', $value)
-                        ->whereNull('st_data_demissao')
-                        ->exists();
-
-                    if ($servidorTemporario) {
-                        $fail('Pessoa com vinculo temporário ativo não podem ser servidores efetivos.');
-                    }
-                }
+                'string',
+                Rule::unique('servidores_efetivos', 'se_matricula')->ignore(
+                    $this->isMethod('PUT') && $this->route('servidorEfetivo')
+                        ? $this->route('servidorEfetivo')->se_id
+                        : null,
+                    'se_id'
+                )
             ],
             'pes_data_nascimento' => "$ruleType|date",
             'pes_sexo' => "$ruleType|string|max:9",
             'pes_mae' => "$ruleType|string|max:200|min:3",
             'pes_pai' => "$ruleType|string|max:200|min:3",
-
+    
             // Regras para Endereço
             'cid_id' => "$ruleType|exists:cidades,cid_id",
             'end_tipo_logradouro' => "$ruleType|string|max:50|min:3",
@@ -62,8 +55,8 @@ class ServidorEfetivoRequest extends FormRequest
             'end_complemento' => "nullable|string|max:100",
             'end_bairro' => "$ruleType|string|max:100|min:3",
         ];
-
-        // Validações específicas para PUT (atualização)
+    
+        // Validações específicas para atualização (PUT)
         if ($this->isMethod('PUT')) {
             $rules['pes_id'] = [
                 'sometimes',
@@ -73,14 +66,14 @@ class ServidorEfetivoRequest extends FormRequest
                     $servidorTemporario = ServidorTemporario::where('pes_id', $value)
                         ->whereNull('st_data_demissao')
                         ->exists();
-
+    
                     if ($servidorTemporario) {
                         $fail('Pessoas com vínculo temporário ativo não podem ser servidores efetivos.');
                     }
                 }
             ];
         }
-
+    
         return $rules;
     }
 

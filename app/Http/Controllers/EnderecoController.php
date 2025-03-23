@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\ApiResponse;
 use App\Http\Requests\Endereco\EnderecoRequest;
 use App\Http\Resources\EnderecoResource;
 use App\Services\EnderecoService;
@@ -350,24 +351,9 @@ class EnderecoController extends Controller
                 'success' => true,
                 'message' => 'Endereço excluído com sucesso.'
             ], Response::HTTP_OK);
-
-        } catch (ModelNotFoundException $e) {
-            return response()->json([
-                'success' => false,
-                'message' => $e->getMessage()
-            ], Response::HTTP_NOT_FOUND);
-
-        } catch (QueryException $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Erro ao deletar o endereço. Possivelmente há dependências associadas.'
-            ], Response::HTTP_BAD_REQUEST);
-
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Ocorreu um erro inesperado ao deletar o endereço.'
-            ], Response::HTTP_INTERNAL_SERVER_ERROR);
+            
+        }  catch (\Exception $e) {
+            return ApiResponse::handleException($e);
         }
     }
 }
