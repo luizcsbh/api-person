@@ -47,26 +47,15 @@ class ServidorEfetivoRepository implements ServidorEfetivoRepositoryInterface
         return $this->model->findOrFail($id)->delete();
     }
 
-    public function findByIdWithServidor(int $id)
+    public function findByIdWithPessoa(int $id)
     {
-        return $this->model->with(['pessoa' => function(Builder $query) {
-            $query->select(['pes_id', 'pes_nome', 'pes_cpf']);
-        }])
-        ->find($id);
+        return $this->model->with('pessoa')->findOrFail($id);
     }
-    public function findByIdWithRelations(int $id)
+
+    public function updateMatricula($pesId, string $matricula)
     {
-        return $this->model->with([
-            'pessoa.enderecos' => function(Builder $query) {
-                $query->select([
-                    'end_id',
-                    'cid_id',
-                    'end_logradouro',
-                    'end_numero',
-                    'end_complemento'
-                ]);
-            }
-        ])
-        ->find($id);
+        return $this->model->where('pes_id', $pesId)
+            ->update(['se_matricula' => $matricula]);
     }
+
 }

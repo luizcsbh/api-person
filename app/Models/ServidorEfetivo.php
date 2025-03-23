@@ -34,6 +34,7 @@ class ServidorEfetivo extends Model
 
     protected $table = 'servidores_efetivos';
     protected $primaryKey = 'pes_id';
+    public $incrementing = false;
     protected $fillable = ['pes_id', 'se_matricula'];
 
     public function pessoa()

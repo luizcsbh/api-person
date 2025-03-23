@@ -11,6 +11,7 @@ use App\Services\ServidorEfetivoService;
 use App\Http\Resources\ServidorEfetivoResource;
 use App\Http\Requests\Servidor\Efetivo\StoreServidorEfetivoRequest;
 use App\Http\Requests\Servidor\Efetivo\ServidorEfetivoUpdateRequest;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Symfony\Component\Routing\Exception\ResourceNotFoundException;
 
 class ServidorEfetivoController extends Controller
@@ -133,10 +134,10 @@ class ServidorEfetivoController extends Controller
      *     ),
      *     @OA\Response(
      *         response=500,
-     *         description="Erro ao criar o pessoa",
+     *         description="Erro ao criar o servidor efetivo.",
      *         @OA\JsonContent(
      *             type="object",
-     *             @OA\Property(property="error", type="string", example="Erro ao criar o ")
+     *             @OA\Property(property="error", type="string", example="Erro ao criar o servidor efetivo.")
      *         )
      *     )
      * )
@@ -274,20 +275,23 @@ class ServidorEfetivoController extends Controller
     public function update(ServidorEfetivoUpdateRequest $request, string $id)
     {
         try {
-            $servidor = $this->servidorEfetivoService->updateServidor(
+            
+            $servidorEfetivo = $this->servidorEfetivoService->updateServidorEfetivo(
                 $id, 
                 $request->validated()
             );
             
-            return new ServidorEfetivoResource($servidor);
+            return new ServidorEfetivoResource($servidorEfetivo);
             
-        } catch (ResourceNotFoundException $e) {
+        } catch (ModelNotFoundException $e) {
             return response()->json([
-                'message' => $e->getMessage()
+                'success' => false,
+                'message' => 'Registro não encontrado!'
             ], Response::HTTP_NOT_FOUND);
             
         } catch (\Exception $e) {
             return response()->json([
+                'success'=> false,
                 'message' => 'Erro ao atualizar registro',
                 'error' => $e->getMessage()
             ], Response::HTTP_INTERNAL_SERVER_ERROR);

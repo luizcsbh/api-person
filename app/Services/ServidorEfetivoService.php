@@ -128,56 +128,30 @@ class ServidorEfetivoService
      * @return mixed Dados da relação atualizada.
      * @throws Exception Se o ID não for encontrado.
      */
-    public function updateServidor($id, array $validatedData)
+    public function updateServidorEfetivo($pesId, array $dados)
     {
-        return DB::transaction(function () use ($id, $validatedData) {
-            // Buscar servidor
-            $servidorEfetivo = $this->servidorEfetivoRepository->findByIdWithRelations($id);
-            
+        return DB::transaction(function () use ($pesId, $dados) {
             // Atualizar Pessoa
-            if (!empty($validatedData['pes_nome'])) { // Corrigido parêntese
-                $this->pessoaRepository->update(
-                    $servidorEfetivo->pes_id,
-                    collect($validatedData)->only([
-                        'pes_nome',
-                        'pes_cpf',
-                        'pes_data_nascimento',
-                        'pes_sexo',
-                        'pes_mae',
-                        'pes_pai'
-                    ])->toArray()
-                );
+            if(isset($dados['pes_nome'])) {
+                $this->pessoaRepository->update($pesId, [
+                    'pes_nome' => $dados['pes_nome'],
+                    'pes_cpf' => $dados['pes_cpf'] ?? null,
+                    "pes_data_nascimento" => $dados['pes_data_nascimento']?? null,
+                    "pes_sexo"=> $dados['pes_,sexo']?? null,
+                    "pes_mae" => $dados['pes_mae']?? null,
+                    "pes_pai"=> $dados['pes_pai'] ?? null,
+                ]);
             }
-    
-            // Atualizar Endereço (primeiro endereço vinculado)
-            if (!empty($validatedData['end_logradouro'])) {
-                // Corrigido nome da variável e verificação de existência
-                $endereco = $servidorEfetivo->pessoa->enderecos->first();
-                
-                if($endereco) {
-                    $this->enderecoRepository->update(
-                        $endereco->end_id,
-                        collect($validatedData)->only([
-                            'cid_id',
-                            'end_tipo_logradouro',
-                            'end_logradouro',
-                            'end_numero',
-                            'end_complemento',
-                            'end_bairro'
-                        ])->toArray()
-                    );
-                }
-            }
-            
+
             // Atualizar Servidor Efetivo
-            if (!empty($validatedData['se_matricula'])) {
-                $this->servidorEfetivoRepository->update( // Corrigido nome do repositório
-                    $id,
-                    collect($validatedData)->only(['se_matricula'])->toArray()
+            if(isset($dados['se_matricula'])) {
+                $this->servidorEfetivoRepository->updateMatricula(
+                    $pesId,
+                    $dados['se_matricula']
                 );
             }
-    
-            return $this->servidorEfetivoRepository->findByIdWithRelations($id);
+
+            return $this->servidorEfetivoRepository->findByIdWithPessoa($pesId);
         });
     }
 
@@ -232,17 +206,6 @@ class ServidorEfetivoService
         if ($servidorEfetivo->lotacoes()->exists()) {
             throw new Exception('Não é possível excluir a servidor efetivo. Existem lotações associadas a ela.');
         }
-    }
-
-    public function findServidorEfetivo($id)
-    {
-        $servidorEfetivo = $this->servidorEfetivoRepository->findByIdWithServidor($id);
-
-        if (!$servidorEfetivo) {
-            throw new ResourceNotFoundException('Servidor efetivo não encontrado!');
-        }
-
-        return $servidorEfetivo;
     }
 
 }

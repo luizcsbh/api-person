@@ -1577,14 +1577,14 @@
                         }
                     },
                     "500": {
-                        "description": "Erro ao criar o pessoa",
+                        "description": "Erro ao criar o servidor efetivo.",
                         "content": {
                             "application/json": {
                                 "schema": {
                                     "properties": {
                                         "error": {
                                             "type": "string",
-                                            "example": "Erro ao criar o "
+                                            "example": "Erro ao criar o servidor efetivo."
                                         }
                                     },
                                     "type": "object"
