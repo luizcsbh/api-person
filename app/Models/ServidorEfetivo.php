@@ -22,7 +22,7 @@ use Illuminate\Support\Facades\Storage;
  *     ),
  *     @OA\Property(
  *         property="se_matricula",
- *         type="datetime",
+ *         type="string",
  *         description="Matricula do Servidor",
  *         example="2003456788467"
  *     ),

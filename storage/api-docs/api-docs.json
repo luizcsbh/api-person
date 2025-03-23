@@ -1707,14 +1707,9 @@
                         "application/json": {
                             "schema": {
                                 "required": [
-                                    "pes_id",
                                     "se_matricula"
                                 ],
                                 "properties": {
-                                    "pes_id": {
-                                        "type": "integer",
-                                        "example": "2"
-                                    },
                                     "se_matricula": {
                                         "type": "string",
                                         "example": "2003456788467"
@@ -1742,6 +1737,22 @@
                                         },
                                         "data": {
                                             "$ref": "#/components/schemas/ServidorEfetivo"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Registro não encontrado!",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Registro não encontrado!"
                                         }
                                     },
                                     "type": "object"

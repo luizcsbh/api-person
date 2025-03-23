@@ -38,7 +38,7 @@ class EnderecoRepository implements EnderecoRepositoryInterface
 
     public function update(array $data, $id)
     {
-        return $this->model->where('end_id',$id)->update($data, $id);
+        return $this->model->where('end_id',$id)->update($data);
     }
 
     public function findWithRelations($id, array $relations)

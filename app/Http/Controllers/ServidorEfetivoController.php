@@ -3,14 +3,20 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\ApiResponse;
-use Illuminate\Http\Request;
-use Illuminate\Http\Response;
-use App\Services\PessoaService;
-use App\Services\EnderecoService;
-use App\Services\ServidorEfetivoService;
+use Illuminate\Http\{
+    Request,
+    Response
+};
+use App\Services\{
+    PessoaService,
+    EnderecoService,
+    ServidorEfetivoService
+};
 use App\Http\Resources\ServidorEfetivoResource;
-use App\Http\Requests\Servidor\Efetivo\StoreServidorEfetivoRequest;
-use App\Http\Requests\Servidor\Efetivo\ServidorEfetivoUpdateRequest;
+use App\Http\Requests\Servidor\Efetivo\{
+    StoreServidorEfetivoRequest,
+    UpdateServidorEfetivoRequest
+};
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Symfony\Component\Routing\Exception\ResourceNotFoundException;
 
@@ -247,8 +253,7 @@ class ServidorEfetivoController extends Controller
      *         required=false,
      *         description="Dados para atualização da servidor efetivo",
      *         @OA\JsonContent(
-     *             required={"pes_id","se_matricula"},
-     *             @OA\Property(property="pes_id", type="integer", example="2"),
+     *             required={"se_matricula"},
      *             @OA\Property(property="se_matricula", type="string", example="2003456788467")
      *         )
      *     ),
@@ -263,6 +268,14 @@ class ServidorEfetivoController extends Controller
      *         )
      *     ),
      *     @OA\Response(
+     *         response=404,
+     *         description="Registro não encontrado!",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="error", type="string", example="Registro não encontrado!")
+     *         )
+     *     ),
+     *     @OA\Response(
      *         response=500,
      *         description="Erro ao processar a atualização da servidor efetivo",
      *         @OA\JsonContent(
@@ -272,7 +285,7 @@ class ServidorEfetivoController extends Controller
      *     )
      * )
      */ 
-    public function update(ServidorEfetivoUpdateRequest $request, string $id)
+    public function update(UpdateServidorEfetivoRequest $request, string $id)
     {
         try {
             
@@ -281,7 +294,10 @@ class ServidorEfetivoController extends Controller
                 $request->validated()
             );
             
-            return new ServidorEfetivoResource($servidorEfetivo);
+            return response()->json([
+                'success' => true,
+                'data' => new ServidorEfetivoResource($servidorEfetivo)
+            ],Response::HTTP_OK);
             
         } catch (ModelNotFoundException $e) {
             return response()->json([
@@ -292,7 +308,7 @@ class ServidorEfetivoController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'success'=> false,
-                'message' => 'Erro ao atualizar registro',
+                'message' => 'Erro ao atualizar registro!',
                 'error' => $e->getMessage()
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }

@@ -131,19 +131,6 @@ class ServidorEfetivoService
     public function updateServidorEfetivo($pesId, array $dados)
     {
         return DB::transaction(function () use ($pesId, $dados) {
-            // Atualizar Pessoa
-            if(isset($dados['pes_nome'])) {
-                $this->pessoaRepository->update($pesId, [
-                    'pes_nome' => $dados['pes_nome'],
-                    'pes_cpf' => $dados['pes_cpf'] ?? null,
-                    "pes_data_nascimento" => $dados['pes_data_nascimento']?? null,
-                    "pes_sexo"=> $dados['pes_,sexo']?? null,
-                    "pes_mae" => $dados['pes_mae']?? null,
-                    "pes_pai"=> $dados['pes_pai'] ?? null,
-                ]);
-            }
-
-            // Atualizar Servidor Efetivo
             if(isset($dados['se_matricula'])) {
                 $this->servidorEfetivoRepository->updateMatricula(
                     $pesId,
@@ -151,7 +138,7 @@ class ServidorEfetivoService
                 );
             }
 
-            return $this->servidorEfetivoRepository->findByIdWithPessoa($pesId);
+            return $this->servidorEfetivoRepository->findById($pesId);
         });
     }
 
@@ -206,6 +193,17 @@ class ServidorEfetivoService
         if ($servidorEfetivo->lotacoes()->exists()) {
             throw new Exception('Não é possível excluir a servidor efetivo. Existem lotações associadas a ela.');
         }
+    }
+
+    public function findServidorEfetivo($id)
+    {
+        $servidorEfetivo = $this->servidorEfetivoRepository->findByIdWithPessoa($id);
+
+        if (!$servidorEfetivo) {
+            throw new ResourceNotFoundException('Servidor efetivo não encontrado!');
+        }
+
+        return $servidorEfetivo;
     }
 
 }
