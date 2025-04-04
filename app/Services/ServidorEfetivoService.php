@@ -34,7 +34,7 @@ class ServidorEfetivoService
     {
         $servidorEfetivo = $this->servidorEfetivoRepository->findById($id);
         if (!$servidorEfetivo) {
-            throw new Exception('Servidor efetivo não encontrado.');
+            throw new Exception('Servidor efetivo não encontrado!');
         }
         return $servidorEfetivo;
     }
@@ -62,7 +62,7 @@ class ServidorEfetivoService
     {
         $servidorEfetivo = $this->servidorEfetivoRepository->findById($id);
         if (!$servidorEfetivo) {
-            throw new Exception('Servidor efetivo não encontrado.');
+            throw new Exception('Servidor efetivo não encontrado!');
         }
 
         return $this->servidorEfetivoRepository->update($data, $id);
