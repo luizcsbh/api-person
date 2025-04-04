@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Model;
  *     schema="ServidorTemporario",
  *     type="object",
  *     title="Servidor Temporario",
- *     description="Modelo de Servidor Efetivo",
+ *     description="Modelo de Servidor Temporario",
  *     required={"pes_id","st_data_admissao", "st_data_demissao"},
  *     @OA\Property(
  *         property="pes_id",
@@ -19,10 +19,16 @@ use Illuminate\Database\Eloquent\Model;
  *         example="2"
  *     ),
  *     @OA\Property(
- *         property="se_matricula",
+ *         property="st_data_admissao",
  *         type="datetime",
- *         description="Matricula do Servidor",
- *         example="2003456788467"
+ *         description="Data de admissão",
+ *         example="2024-05-01T00:00:00"
+ *     ),
+ *      @OA\Property(
+ *         property="st_data_demissao",
+ *         type="datetime",
+ *         description="Data de demissão",
+ *         example="2024-05-01T00:00:00"
  *     ),
  * )
  */

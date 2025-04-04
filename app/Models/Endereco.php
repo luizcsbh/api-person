@@ -56,7 +56,8 @@ use Illuminate\Database\Eloquent\Model;
  *     ),
  * )
  */
-class Endereco extends Model
+
+ class Endereco extends Model
 {
     use HasFactory;
 

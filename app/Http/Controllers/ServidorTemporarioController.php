@@ -10,64 +10,64 @@ use Illuminate\Http\{
 use App\Services\{
     PessoaService,
     EnderecoService,
-    ServidorEfetivoService
+    servidorTemporarioService
 };
-use App\Http\Resources\ServidorEfetivoResource;
-use App\Http\Requests\Servidor\Efetivo\{
-    StoreServidorEfetivoRequest,
-    UpdateServidorEfetivoRequest
+use App\Http\Resources\ServidorTemporarioResource;
+use App\Http\Requests\Servidor\Temporario\{
+    StoreservidorTemporarioRequest,
+    UpdateServidorTemporarioRequest
 };
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Symfony\Component\Routing\Exception\ResourceNotFoundException;
 
-class ServidorEfetivoController extends Controller
+class ServidorTemporarioController extends Controller
 {
-    protected $servidorEfetivoService;
+    protected $servidorTemporarioService;
     protected $pessoaService;
     protected $enderecoService;
 
     public function __construct(
-        ServidorEfetivoService $servidorEfetivoService,
+        ServidorTemporarioService $servidorTemporarioService,
         PessoaService $pessoaService,
         EnderecoService $enderecoService
     )
     {
-        $this->servidorEfetivoService = $servidorEfetivoService;
+        $this->servidorTemporarioService = $servidorTemporarioService;
         $this->pessoaService = $pessoaService;
         $this->enderecoService = $enderecoService;
     }
 
     /**
      * @OA\Get(
-     *     path="/servidores-efetivos",
-     *     summary="Lista todos as servidores efetivos",
-     *     description="Retorna uma lista de servidores efetivos armazenados no banco de dados.",
-     *     tags={"Servidor Efetivo"},
+     *     path="/servidores-temporarios",
+     *     summary="Lista todos as servidores temporarios",
+     *     description="Retorna uma lista de servidores temporarios armazenados no banco de dados.",
+     *     tags={"Servidor Temporario"},
      *     @OA\Response(
      *         response=200,
-     *         description="Lista de servidores efetivos retornada com sucesso",
+     *         description="Lista de servidores temporarios retornada com sucesso",
      *         @OA\JsonContent(
      *             type="object",
      *             @OA\Property(property="success", type="boolean", example=true),
-     *             @OA\Property(property="data", type="array", @OA\Items(ref="#/components/schemas/ServidorEfetivo"))
+     *             @OA\Property(property="data", type="array", @OA\Items(ref="#/components/schemas/ServidorTemporario"))
      *         )
      *     ),
      *     @OA\Response(
      *         response=404,
-     *         description="Nenhum servidor efetivo encontrado",
+     *         description="Nenhum servidor temporario encontrado",
      *         @OA\JsonContent(
      *             type="object",
      *             @OA\Property(property="success", type="boolean", example=false),
-     *             @OA\Property(property="message", type="string", example="Não há servidores efetivos cadastrados!")
+     *             @OA\Property(property="message", type="string", example="Não há servidores temporarios cadastrados!")
      *         )
      *     ),
      *     @OA\Response(
      *         response=500,
-     *         description="Erro interno ao buscar os servidores efetivos",
+     *         description="Erro interno ao buscar os servidores temporarios",
      *         @OA\JsonContent(
      *             type="object",
      *             @OA\Property(property="success", type="boolean", example=false),
-     *             @OA\Property(property="message", type="string", example="Erro ao buscar os servidores efetivos."),
+     *             @OA\Property(property="message", type="string", example="Erro ao buscar os servidores temporarios."),
      *             @OA\Property(property="error", type="string", example="Detalhes do erro")
      *         )
      *     )
@@ -77,26 +77,26 @@ class ServidorEfetivoController extends Controller
     {
         try {
             $perPage = $request->input('per_page', 10);
-            $servidoresEfetivos = $this->servidorEfetivoService->paginate($perPage);
+            $servidorestemporarios = $this->servidorTemporarioService->paginate($perPage);
     
-            if ($servidoresEfetivos->total() === 0) {
+            if ($servidorestemporarios->total() === 0) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Nenhum servidor efetivo encontrada',
+                    'message' => 'Nenhum servidor temporario encontrada',
                     'data' => []
                 ], Response::HTTP_NOT_FOUND);
             }
     
-            return ServidorEfetivoResource::collection($servidoresEfetivos)
+            return ServidorTemporarioResource::collection($servidorestemporarios)
                 ->additional([
                     'success' => true,
-                    'message' => 'Lista de servidores efetivos recuperada com sucesso'
+                    'message' => 'Lista de servidores temporarios recuperada com sucesso'
                 ],Response::HTTP_OK);
     
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Erro ao buscar servidores efetivos',
+                'message' => 'Erro ao buscar servidores temporarios',
                 'error' => config('app.debug') ? $e->getMessage() : null
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
@@ -104,19 +104,20 @@ class ServidorEfetivoController extends Controller
 
     /**
      * @OA\Post(
-     *     path="/servidores-efetivos",
-     *     summary="Cria um servidor efetivo",
-     *     description="Registra um servidor efetivo no banco de dados.",
-     *     tags={"Servidor Efetivo"},
+     *     path="/servidores-temporarios",
+     *     summary="Cria um servidor temporario",
+     *     description="Registra um servidor temporario no banco de dados.",
+     *     tags={"Servidor Temporario"},
      *     @OA\RequestBody(
      *         required=true,
-     *         description="Dados necessários para criar um servidor efetivo",
+     *         description="Dados necessários para criar um servidor temporario",
      *         @OA\JsonContent(
-     *             required={"pes_nome","pes_cpf","se_matricula","pes_data_nascimento","pes_sexo","pes_mae","pes_pai","cid_id","end_tipo_logradouro","end_logradouro","end_numero","end_bairro"},
+     *             required={"pes_nome","pes_cpf","pes_data_nascimento","st_data_admissao","st_data_demissao","pes_sexo","pes_mae","pes_pai","cid_id","end_tipo_logradouro","end_logradouro","end_numero","end_bairro"},
      *             @OA\Property(property="pes_nome", type="string", example="João da Silva"),
      *             @OA\Property(property="pes_cpf", type="string", example="111.222.333-44"),
-     *             @OA\Property(property="se_matricula", type="string", example="2003456788467"),
-     *             @OA\Property(property="pes_data_nascimento", type="datetime", format="datetime", example="1978-08-23T12:00:00Z"),
+     *             @OA\Property(property="pes_data_nascimento", type="string", format="datetime", example="1978-08-23T12:00:00Z"),
+     *             @OA\Property(property="st_data_admissao", type="string", format="datetime", example="2021-02-15T12:00:00Z"),
+     *             @OA\Property(property="st_data_demissao", type="string", format="datetime", example="0000-00-00T12:00:00Z"),
      *             @OA\Property(property="pes_sexo", type="string", example="Masculino"),
      *             @OA\Property(property="pes_mae", type="string", example="Maria Aparecida da Silva"),
      *             @OA\Property(property="pes_pai", type="string", example="Cícero Joaquim da Silva"),
@@ -140,18 +141,18 @@ class ServidorEfetivoController extends Controller
      *     ),
      *     @OA\Response(
      *         response=500,
-     *         description="Erro ao criar o servidor efetivo.",
+     *         description="Erro ao criar o servidor temporario.",
      *         @OA\JsonContent(
      *             type="object",
-     *             @OA\Property(property="error", type="string", example="Erro ao criar o servidor efetivo.")
+     *             @OA\Property(property="error", type="string", example="Erro ao criar o servidor temporario.")
      *         )
      *     )
      * )
      */
-    public function store(StoreServidorEfetivoRequest $request)
+    public function store(StoreServidorTemporarioRequest $request)
     {
         try {
-            $result = $this->servidorEfetivoService->createServidorEfetivo($request->validated());
+            $result = $this->servidorTemporarioService->createServidorTemporario($request->validated());
 
             return response()->json([
                 'success'=> true,
@@ -167,49 +168,49 @@ class ServidorEfetivoController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'success'=> false,
-                'message'=>  'Erro no servidor'
+                'message'=>  'Erro no servidor: '.$e->getMessage()
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }   
     }
 
     /**
      * @OA\Get(
-     *     path="/servidores-efetivos/{id}",
-     *     summary="Obtém os detalhes de um servidor efetivo",
-     *     description="Retorna os detalhes de um servidor efetivo em específico pelo ID.",
-     *     tags={"Servidor Efetivo"},
+     *     path="/servidores-temporarios/{id}",
+     *     summary="Obtém os detalhes de um servidor temporario",
+     *     description="Retorna os detalhes de um servidor temporario em específico pelo ID.",
+     *     tags={"Servidor Temporario"},
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
      *         required=true,
-     *         description="ID da servidor efetivo",
+     *         description="ID da servidor temporario",
      *         @OA\Schema(type="integer", example=1)
      *     ),
      *     @OA\Response(
      *         response=200,
-     *         description="Detalhes da servidor efetivo retornados com sucesso",
+     *         description="Detalhes da servidor temporario retornados com sucesso",
      *         @OA\JsonContent(
      *             type="object",
      *             @OA\Property(property="success", type="boolean", example=true),
-     *             @OA\Property(property="data", ref="#/components/schemas/ServidorEfetivo")
+     *             @OA\Property(property="data", ref="#/components/schemas/ServidorTemporario")
      *         )
      *     ),
      *     @OA\Response(
      *         response=404,
-     *         description="Servidor Efetivo não encontrado",
+     *         description="Servidor Temporario não encontrado",
      *         @OA\JsonContent(
      *             type="object",
      *             @OA\Property(property="success", type="boolean", example=false),
-     *             @OA\Property(property="message", type="string", example="Servidor Efetivo não encontrado!")
+     *             @OA\Property(property="message", type="string", example="Servidor Temporario não encontrado!")
      *         )
      *     ),
      *     @OA\Response(
      *         response=500,
-     *         description="Erro interno ao buscar os servidores efetivos",
+     *         description="Erro interno ao buscar os servidores temporarios",
      *         @OA\JsonContent(
      *             type="object",
      *             @OA\Property(property="success", type="boolean", example=false),
-     *             @OA\Property(property="message", type="string", example="Erro ao buscar os servidores efetivos."),
+     *             @OA\Property(property="message", type="string", example="Erro ao buscar os servidores temporarios."),
      *             @OA\Property(property="error", type="string", example="Detalhes do erro")
      *         )
      *     )
@@ -220,8 +221,8 @@ class ServidorEfetivoController extends Controller
         
         try {
 
-            $servidorEfetivo = $this->servidorEfetivoService->getServidoresEfetivosById($id);
-            return new ServidorEfetivoResource($servidorEfetivo);
+            $servidorTemporario = $this->servidorTemporarioService->getServidorestemporariosById($id);
+            return new servidorTemporarioResource($servidorTemporario);
 
         } catch (ResourceNotFoundException $e) {
             return response()->json([
@@ -238,33 +239,34 @@ class ServidorEfetivoController extends Controller
 
     /**
      * @OA\Put(
-     *     path="/servidores-efetivos/{id}",
-     *     summary="Atualiza um servidor efetivo existente",
-     *     description="Atualiza os dados de uma servidor efetivo com base no ID fornecido.",
-     *     tags={"Servidor Efetivo"},
+     *     path="/servidores-temporarios/{id}",
+     *     summary="Atualiza um servidor temporario existente",
+     *     description="Atualiza os dados de uma servidor temporario com base no ID fornecido.",
+     *     tags={"Servidor Temporario"},
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
      *         required=true,
-     *         description="ID da servidor efetivo a ser atualizado",
+     *         description="ID da servidor temporario a ser atualizado",
      *         @OA\Schema(type="integer", example=1)
      *     ),
      *     @OA\RequestBody(
      *         required=false,
-     *         description="Dados para atualização da servidor efetivo",
+     *         description="Dados para atualização da servidor temporario",
      *         @OA\JsonContent(
-     *             required={"se_matricula"},
-     *             @OA\Property(property="se_matricula", type="string", example="2003456788467")
+     *             required={"st_data_admissao", "st_data_demissao"},
+     *             @OA\Property(property="st_data_admissao", type="string", format="datetime", example="2021-02-15T12:00:00Z"),
+     *             @OA\Property(property="st_data_demissao", type="string", format="datetime", example="0000-00-00T12:00:00Z"),
      *         )
      *     ),
      *     @OA\Response(
      *         response=200,
-     *         description="Servidor Efetivo atualizado com sucesso",
+     *         description="Servidor Temporario atualizado com sucesso",
      *         @OA\JsonContent(
      *             type="object",
      *             @OA\Property(property="success", type="boolean", example=true),
-     *             @OA\Property(property="message", type="string", example="Servidor Efetivo atualizado com sucesso!"),
-     *             @OA\Property(property="data", ref="#/components/schemas/ServidorEfetivo")
+     *             @OA\Property(property="message", type="string", example="Servidor Temporario atualizado com sucesso!"),
+     *             @OA\Property(property="data", ref="#/components/schemas/ServidorTemporario")
      *         )
      *     ),
      *     @OA\Response(
@@ -277,7 +279,7 @@ class ServidorEfetivoController extends Controller
      *     ),
      *     @OA\Response(
      *         response=500,
-     *         description="Erro ao processar a atualização da servidor efetivo",
+     *         description="Erro ao processar a atualização da servidor temporario",
      *         @OA\JsonContent(
      *             type="object",
      *             @OA\Property(property="error", type="string", example="Erro ao processar a solicitação.")
@@ -285,18 +287,18 @@ class ServidorEfetivoController extends Controller
      *     )
      * )
      */ 
-    public function update(UpdateServidorEfetivoRequest $request, string $id)
+    public function update(UpdateServidorTemporarioRequest $request, string $id)
     {
         try {
             
-            $servidorEfetivo = $this->servidorEfetivoService->updateServidorEfetivo(
+            $servidorTemporario = $this->servidorTemporarioService->updateservidorTemporario(
                 $id, 
                 $request->validated()
             );
             
             return response()->json([
                 'success' => true,
-                'data' => new ServidorEfetivoResource($servidorEfetivo)
+                'data' => new servidorTemporarioResource($servidorTemporario)
             ],Response::HTTP_OK);
             
         } catch (ModelNotFoundException $e) {
@@ -316,51 +318,51 @@ class ServidorEfetivoController extends Controller
 
     /**
      * @OA\Delete(
-     *     path="/servidores-efetivos/{id}",
-     *     summary="Exclui um servidor efetivo",
-     *     description="Exclui um servidor efetivo do banco de dados com base no ID fornecido.",
-     *     tags={"Servidor Efetivo"},
+     *     path="/servidores-temporarios/{id}",
+     *     summary="Exclui um servidor temporario",
+     *     description="Exclui um servidor temporario do banco de dados com base no ID fornecido.",
+     *     tags={"Servidor Temporario"},
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
      *         required=true,
-     *         description="ID da servidor efetivo a ser excluído",
+     *         description="ID da servidor temporario a ser excluído",
      *         @OA\Schema(type="integer", example=1)
      *     ),
      *     @OA\Response(
      *         response=200,
-     *         description="Servidor efetivo excluído com sucesso",
+     *         description="Servidor temporario excluído com sucesso",
      *         @OA\JsonContent(
      *             type="object",
      *             @OA\Property(property="success", type="boolean", example=true),
-     *             @OA\Property(property="message", type="string", example="Servidor efetivo excluído com sucesso.")
+     *             @OA\Property(property="message", type="string", example="Servidor temporario excluído com sucesso.")
      *         )
      *     ),
      *     @OA\Response(
      *         response=404,
-     *         description="Servidor efetivo não encontrado",
+     *         description="Servidor temporario não encontrado",
      *         @OA\JsonContent(
      *             type="object",
      *             @OA\Property(property="success", type="boolean", example=false),
-     *             @OA\Property(property="message", type="string", example="Servidor efetivo não encontrado.")
+     *             @OA\Property(property="message", type="string", example="Servidor temporario não encontrado.")
      *         )
      *     ),
      *     @OA\Response(
      *         response=400,
-     *         description="Erro ao excluir o servidor efetivo devido a dependências",
+     *         description="Erro ao excluir o servidor temporario devido a dependências",
      *         @OA\JsonContent(
      *             type="object",
      *             @OA\Property(property="success", type="boolean", example=false),
-     *             @OA\Property(property="message", type="string", example="Erro ao deletar o servidor efetivo. Possivelmente há dependências associadas.")
+     *             @OA\Property(property="message", type="string", example="Erro ao deletar o servidor temporario. Possivelmente há dependências associadas.")
      *         )
      *     ),
      *     @OA\Response(
      *         response=500,
-     *         description="Erro ao excluir o servidor efetivo",
+     *         description="Erro ao excluir o servidor temporario",
      *         @OA\JsonContent(
      *             type="object",
      *             @OA\Property(property="success", type="boolean", example=false),
-     *             @OA\Property(property="message", type="string", example="Erro ao excluir o servidor efetivo."),
+     *             @OA\Property(property="message", type="string", example="Erro ao excluir o servidor temporario."),
      *             @OA\Property(property="error", type="string", example="Detalhes do erro.")
      *         )
      *     )
@@ -369,11 +371,11 @@ class ServidorEfetivoController extends Controller
     public function destroy(string $id)
     {
         try {
-            $this->servidorEfetivoService->deleteServidorEfetivo($id);
+            $this->servidorTemporarioService->deleteservidorTemporario($id);
 
             return response()->json([
                 'success' => true,
-                'message' => 'Servidor efetivo excluída com sucesso.'
+                'message' => 'Servidor temporario excluída com sucesso.'
             ], Response::HTTP_OK);
 
         } catch (\Exception $e) {

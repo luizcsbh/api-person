@@ -3,9 +3,9 @@
 namespace App\Repositories\Eloquent;
 
 use App\Models\ServidorEfetivo;
+use App\Models\ServidorTemporario;
 use App\Repositories\ServidorEfetivoRepositoryInterface;
 use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Database\Eloquent\Builder;
 
 class ServidorEfetivoRepository implements ServidorEfetivoRepositoryInterface
 {
@@ -21,7 +21,8 @@ class ServidorEfetivoRepository implements ServidorEfetivoRepositoryInterface
         return $this->model->with('pessoa')->get();
     }
 
-    public function paginate(int $perPage = 10): LengthAwarePaginator
+    public function 
+    paginate(int $perPage = 10): LengthAwarePaginator
     {
         return $this->model->with(['pessoa'])
             ->paginate($perPage);
@@ -56,6 +57,41 @@ class ServidorEfetivoRepository implements ServidorEfetivoRepositoryInterface
     {
         return $this->model->where('pes_id', $pesId)
             ->update(['se_matricula' => $matricula]);
+    }
+
+     /**
+     * Check if pessoa has active temporary link
+     * 
+     * @param int $pesId
+     * @return bool
+     */
+    public function hasActiveTemporaryLink(int $pesId): bool
+    {
+        return ServidorTemporario::where('pes_id', $pesId)
+            ->whereNull('st_data_demissao')
+            ->exists();
+    }
+
+    /**
+     * Check if servidor efetivo has pessoa associated
+     * 
+     * @param ServidorEfetivo $servidorEfetivo
+     * @return bool
+     */
+    public function hasPessoa(ServidorEfetivo $servidorEfetivo): bool
+    {
+        return $servidorEfetivo->pessoa()->exists();
+    }
+
+    /**
+     * Check if servidor efetivo has lotacoes associated
+     * 
+     * @param ServidorEfetivo $servidorEfetivo
+     * @return bool
+     */
+    public function hasLotacoes(ServidorEfetivo $servidorEfetivo): bool
+    {
+        return $servidorEfetivo->lotacoes()->exists();
     }
 
 }

@@ -5,7 +5,7 @@ namespace App\Http\Requests\Servidor\Temporario;
 use App\Rules\Servidor\UniqueServidor;
 use Illuminate\Foundation\Http\FormRequest;
 
-class ServidorTemporarioRequest extends FormRequest
+class UpdateServidorTemporarioRequest extends FormRequest
 {
     public function authorize()
     {

@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\Pessoa;
 use App\Models\Pessoas;
 use Exception;
 use App\Repositories\PessoaRepositoryInterface;
@@ -152,7 +153,7 @@ class PessoaService
      * 
      * @return void
      */
-    public function checkDependencies(Pessoas $pessoa)
+    public function checkDependencies(Pessoa $pessoa)
     {
         if ($pessoa->fotos()->exists()) {
             throw new Exception('Não é possível excluir a pessoa. Existem fotos associados a ela.');

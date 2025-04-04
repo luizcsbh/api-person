@@ -96,7 +96,7 @@ class PessoaController extends Controller
      *             required={"pes_nome","pes_cpf","pes_data_nascimento","pes_sexo","pes_mae","pes_pai"},
      *             @OA\Property(property="pes_nome", type="string", example="João da Silva"),
      *             @OA\Property(property="pes_cpf", type="string", example="111.222.333-44"),
-     *             @OA\Property(property="pes_data_nascimento", type="datetime", example="1978-08-23"),
+     *             @OA\Property(property="pes_data_nascimento", type="string", format="datetime", example="1978-08-23T12:00:00Z"),
      *             @OA\Property(property="pes_sexo", type="string", example="Masculino"),
      *             @OA\Property(property="pes_mae", type="string", example="Maria Aparecida da Silva"),
      *             @OA\Property(property="pes_pai", type="string", example="Cícero Joaquim da Silva")
@@ -232,7 +232,7 @@ class PessoaController extends Controller
      *             required={"pes_nome","pes_cpf","pes_data_nascimento","pes_sexo","pes_mae","pes_pai"},
      *             @OA\Property(property="pes_nome", type="string", example="João da Silva"),
       *            @OA\Property(property="pes_cpf", type="string", example="111.222.333-44"),
-     *             @OA\Property(property="pes_data_nascimento", type="date", example="1978-08-23"),
+     *             @OA\Property(property="pes_data_nascimento", type="string", format="datetimee",example="1978-08-23T12:00:00Z"),
      *             @OA\Property(property="pes_sexo", type="string", example="Masculino"),
      *             @OA\Property(property="pes_mae", type="string", example="Maria Aparecida da Silva"),
      *             @OA\Property(property="pes_pai", type="string", example="Cícero Joaquim da Silva")

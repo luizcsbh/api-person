@@ -1,11 +1,12 @@
 <?php
 
-namespace App\Http\Requests\Servidor\Efetivo;
+namespace App\Http\Requests\Servidor\Temporario;
 
+use App\Rules\Servidor\UniqueServidor;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-class StoreServidorEfetivoRequest extends FormRequest
+class StoreServidorTemporarioRequest extends FormRequest
 {
     public function authorize()
     {
@@ -13,41 +14,43 @@ class StoreServidorEfetivoRequest extends FormRequest
     }
 
     public function rules()
-{
-    return [
-        // Regras para Pessoa
-        'pes_nome' => 'required|string|max:200|min:3',
-        'pes_cpf' => [
-            'required',
-            'string',
-            'max:14',
-            Rule::unique('pessoas', 'pes_cpf')
-        ],
-        'se_matricula' => [
-            'required',
-            'string',
-            Rule::unique('servidores_efetivos', 'se_matricula')
-        ],
-        'pes_data_nascimento' => 'required|date',
-        'pes_sexo' => 'required|string|max:9',
-        'pes_mae' => 'required|string|max:200|min:3',
-        'pes_pai' => 'required|string|max:200|min:3',
-
-        // Regras para Endereço
-        'cid_id' => 'required|exists:cidades,cid_id',
-        'end_tipo_logradouro' => 'required|string|max:50|min:3',
-        'end_logradouro' => 'required|string|max:200|min:3',
-        'end_numero' => 'required|integer|min:0',
-        'end_complemento' => 'nullable|string|max:100',
-        'end_bairro' => 'required|string|max:100|min:3',
-    ];
-}
+    {
+        return [
+            'st_data_admissao' => 'required|date',
+            'st_data_demissao' => 'nullable|date',
+            'pes_nome' => 'required|string|max:200|min:3',
+            'pes_cpf' => [
+                'required',
+                'string',
+                'max:14',
+                Rule::unique('pessoas', 'pes_cpf')
+            ],
+            'pes_data_nascimento' => 'required|date',
+            'pes_sexo' => 'required|string|max:9',
+            'pes_mae' => 'required|string|max:200|min:3',
+            'pes_pai' => 'required|string|max:200|min:3',
     
+            // Regras para Endereço
+            'cid_id' => 'required|exists:cidades,cid_id',
+            'end_tipo_logradouro' => 'required|string|max:50|min:3',
+            'end_logradouro' => 'required|string|max:200|min:3',
+            'end_numero' => 'required|integer|min:0',
+            'end_complemento' => 'nullable|string|max:100',
+            'end_bairro' => 'required|string|max:100|min:3',
+        ];
+    }
 
     public function messages()
     {
         return [
-            // Mensagens para Pessoa
+        
+           
+            'st_data_admissao.required' => 'A data de admissão é obrigatória.',
+            'st_data_admissao.date' => 'Formato de data inválido para admissão.',
+            
+            'st_data_demissao.date' => 'Formato de data inválido para demissão.',
+            'st_data_demissao.after_or_equal' => 'A data de demissão deve ser igual ou posterior à data de admissão.',
+
             'pes_nome.required' => 'O nome é obrigatório.',
             'pes_nome.string' => 'O nome deve ser um texto.',
             'pes_nome.max' => 'O nome pode ter no máximo 200 caracteres.',
@@ -57,10 +60,6 @@ class StoreServidorEfetivoRequest extends FormRequest
             'pes_cpf.string' => 'O CPF deve ser um texto.',
             'pes_cpf.max' => 'O CPF deve ter no máximo 14 caracteres.',
             'pes_cpf.unique' => 'Este CPF já está cadastrado.',
-
-            'se_matricula.string'               => 'A matrícula deve ser um texto.',
-            'se_matricula.max'                  => 'A matrícula deve ter no máximo 14 caracteres.',
-            'se_matricula.unique'               => 'Esta matricula já está cadastrado.',
 
             'pes_data_nascimento.required' => 'A data de nascimento é obrigatória.',
             'pes_data_nascimento.date' => 'A data de nascimento deve ser uma data válida.',

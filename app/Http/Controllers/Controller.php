@@ -35,6 +35,10 @@ use Illuminate\Routing\Controller as BaseController;
  *     description="Gerenciamento dos servidores efetivos"
  * ),
  * @OA\Tag(
+ *     name="Servidor Temporario",
+ *     description="Gerenciamento dos servidores temporarios"
+ * ),
+ * @OA\Tag(
  *     name="Unidade",
  *     description="Gerenciamento das unidades"
  * ),

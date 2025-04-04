@@ -28,10 +28,11 @@ class ServidorEfetivoService
         $this->enderecoRepository = $enderecoRepository;
         $this->servidorEfetivoRepository = $servidorEfetivoRepository;
     }
+
     /**
-     * Retorna todas as relações Servidor Efetivo cadastradas.
-     *
-     * @return mixed Lista de relações Servidor Efetivo.
+     * Get all ServidorEfetivo records
+     * 
+     * @return \Illuminate\Database\Eloquent\Collection
      */
     public function getAllServidoresEfetivos()
     {
@@ -40,10 +41,11 @@ class ServidorEfetivoService
         });
     }
 
-        /**
-     * Retorna todas as relações Pessoa cadastradas com paginacao.
-     *
-     * @return mixed Lista de relações Pessoa paginada.
+    /**
+     * Get paginated ServidorEfetivo records
+     * 
+     * @param int $perPage Items per page
+     * @return \Illuminate\Pagination\LengthAwarePaginator
      */
     public function paginate(int $perPage = 10)
     {
@@ -51,91 +53,61 @@ class ServidorEfetivoService
     }
 
     /**
-     * Retorna uma relação Servidor Efetivo pelo ID.
-     *
-     * @param int $id Identificador da relação Servidor Efetivo.
-     * @return mixed Dados da relação Servidor Efetivo.
-     * @throws Exception Se o ID não for encontrado.
+     * Find ServidorEfetivo by ID
+     * 
+     * @param int $id
+     * @return \App\Models\ServidorEfetivo
+     * @throws ModelNotFoundException
      */
     public function getServidoresEfetivosById($id)
     {
         $servidorEfetivo = $this->servidorEfetivoRepository->findById($id);
+        
         if (!$servidorEfetivo) {
             throw new ModelNotFoundException('Servidor Efetivo não encontrado!');
         }
+        
         return $servidorEfetivo;
     }
-    
+
     /**
-     * Cria uma nova relação Servidor Efetivo.
-     *
-     * @param array $data Dados da nova relação Servidor Efetivo.
-     * @return mixed Dados da relação criada.
+     * Create a new ServidorEfetivo with related Pessoa and Endereco
+     * 
+     * @param array $validatedData
+     * @return array
+     * @throws \DomainException
      */
     public function createServidorEfetivo(array $validatedData)
     {  
         return DB::transaction(function () use ($validatedData) {
-            // Criar Pessoa
-            $pessoa = $this->pessoaRepository->create([
-                'pes_nome' => $validatedData['pes_nome'],
-                'pes_cpf' => $validatedData['pes_cpf'],
-                'pes_data_nascimento' => $validatedData['pes_data_nascimento'],
-                'pes_sexo' => $validatedData['pes_sexo'],
-                'pes_mae' => $validatedData['pes_mae'],
-                'pes_pai' => $validatedData['pes_pai']
-            ]);
-
-            // Criar Endereço
-            $endereco = $this->enderecoRepository->create([
-                'cid_id' => $validatedData['cid_id'],
-                'end_tipo_logradouro' => $validatedData['end_tipo_logradouro'],
-                'end_logradouro' => $validatedData['end_logradouro'],
-                'end_numero' => $validatedData['end_numero'],
-                'end_complemento' => $validatedData['end_complemento'],
-                'end_bairro' => $validatedData['end_bairro']
-            ]);
-
-            // Vincular Endereço
+            $pessoa = $this->createPessoa($validatedData);
+            $endereco = $this->createEndereco($validatedData);
+            
             $this->pessoaRepository->attachEndereco($pessoa->pes_id, $endereco->end_id);
+            $this->validateNoActiveTemporaryLink($pessoa->pes_id);
 
-            // Validar regra de negócio
-            $this->validarVinculoTemporario($pessoa->pes_id);
+            $servidorEfetivo = $this->createServidorEfetivoRecord($pessoa->pes_id, $validatedData['se_matricula']);
 
-            // Criar Servidor Efetivo
-            $servidorEfetivo = $this->servidorEfetivoRepository->create([
-                'pes_id' => $pessoa->pes_id,
-                'se_matricula' => $validatedData['se_matricula']
-            ]);
-
-            return compact('pessoa', 'endereco', 'servidorEfetivo');
+            return [
+                'pessoa' => $pessoa,
+                'endereco' => $endereco,
+                'servidorEfetivo' => $servidorEfetivo
+            ];
         });
     }
 
-    private function validarVinculoTemporario(int $pesId): void
-    {
-        if (ServidorTemporario::where('pes_id', $pesId)
-            ->whereNull('st_data_demissao')
-            ->exists()) {
-            throw new \DomainException('Pessoa com vínculo temporário ativo não pode ser servidor efetivo');
-        }
-    }
-
     /**
-     * Atualiza uma relação Servidor Efetivo existente.
-     *
-     * @param int $id Identificador da relação Servidor Efetivo a ser atualizada.
-     * @param array $data Dados para atualização.
-     * @return mixed Dados da relação atualizada.
-     * @throws Exception Se o ID não for encontrado.
+     * Update ServidorEfetivo record
+     * 
+     * @param int $pesId
+     * @param array $dados
+     * @return \App\Models\ServidorEfetivo
      */
     public function updateServidorEfetivo($pesId, array $dados)
     {
         return DB::transaction(function () use ($pesId, $dados) {
             if(isset($dados['se_matricula'])) {
-                $this->servidorEfetivoRepository->updateMatricula(
-                    $pesId,
-                    $dados['se_matricula']
-                );
+                $this->updateMatricula($pesId, $dados['se_matricula']);
             }
 
             return $this->servidorEfetivoRepository->findById($pesId);
@@ -143,17 +115,17 @@ class ServidorEfetivoService
     }
 
     /**
-     * Exclui uma relação Servidor Efetivo pelo ID.
-     *
-     * @param int $id Identificador da relação Servidor Efetivo a ser excluída.
-     * @return bool True se a exclusão for bem-sucedida, False caso contrário.
+     * Delete ServidorEfetivo record
+     * 
+     * @param int $id
+     * @throws ModelNotFoundException
+     * @throws Exception
      */
     public function deleteServidorEfetivo($id)
     {
-         DB::beginTransaction();
+        DB::beginTransaction();
 
         try {
-
             $servidorEfetivo = $this->servidorEfetivoRepository->findById($id);
 
             if(!$servidorEfetivo) {
@@ -161,13 +133,12 @@ class ServidorEfetivoService
             }
 
             $this->checkDependencies($servidorEfetivo);
-            $servidorEfetivo->delete();
+            $this->servidorEfetivoRepository->delete($servidorEfetivo);
             DB::commit();
 
         } catch (ModelNotFoundException $e) {
             DB::rollBack();
             throw $e;
-
         } catch (\Exception $e) {
             DB::rollBack();
             throw new Exception("Falha ao excluir servidor efetivo: " . $e->getMessage());
@@ -175,26 +146,12 @@ class ServidorEfetivoService
     }
 
     /**
-     * Verifica se existem dependências associadas a uma servidor efetivo, como pessoas e lotações.
-     *
-     * @param \App\Models\ServidorEfetivo $servidorEfetivo A servidor efetivo que será verificada quanto a dependências.
+     * Find ServidorEfetivo with related Pessoa
      * 
-     * @throws \Exception Se a servidor efetivo tiver pessoas ou lotações associadas, uma exceção será lançada 
-     *                    com uma mensagem informando qual tipo de dependência está impedindo a exclusão.
-     * 
-     * @return void
+     * @param int $id
+     * @return \App\Models\ServidorEfetivo
+     * @throws ResourceNotFoundException
      */
-    public function checkDependencies(ServidorEfetivo $servidorEfetivo)
-    {
-        if ($servidorEfetivo->pessoa()->exists()) {
-            throw new Exception('Não é possível excluir a servidor efetivo. Existe uma pessoa associado a ela.');
-        }
-
-        if ($servidorEfetivo->lotacoes()->exists()) {
-            throw new Exception('Não é possível excluir a servidor efetivo. Existem lotações associadas a ela.');
-        }
-    }
-
     public function findServidorEfetivo($id)
     {
         $servidorEfetivo = $this->servidorEfetivoRepository->findByIdWithPessoa($id);
@@ -206,4 +163,95 @@ class ServidorEfetivoService
         return $servidorEfetivo;
     }
 
+    /**
+     * Create Pessoa record
+     * 
+     * @param array $data
+     * @return \App\Models\Pessoa
+     */
+    private function createPessoa(array $data)
+    {
+        return $this->pessoaRepository->create([
+            'pes_nome' => $data['pes_nome'],
+            'pes_cpf' => $data['pes_cpf'],
+            'pes_data_nascimento' => $data['pes_data_nascimento'],
+            'pes_sexo' => $data['pes_sexo'],
+            'pes_mae' => $data['pes_mae'],
+            'pes_pai' => $data['pes_pai']
+        ]);
+    }
+
+    /**
+     * Create Endereco record
+     * 
+     * @param array $data
+     * @return \App\Models\Endereco
+     */
+    private function createEndereco(array $data)
+    {
+        return $this->enderecoRepository->create([
+            'cid_id' => $data['cid_id'],
+            'end_tipo_logradouro' => $data['end_tipo_logradouro'],
+            'end_logradouro' => $data['end_logradouro'],
+            'end_numero' => $data['end_numero'],
+            'end_complemento' => $data['end_complemento'],
+            'end_bairro' => $data['end_bairro']
+        ]);
+    }
+
+    /**
+     * Create ServidorEfetivo record
+     * 
+     * @param int $pesId
+     * @param string $matricula
+     * @return \App\Models\ServidorEfetivo
+     */
+    private function createServidorEfetivoRecord($pesId, $matricula)
+    {
+        return $this->servidorEfetivoRepository->create([
+            'pes_id' => $pesId,
+            'se_matricula' => $matricula
+        ]);
+    }
+
+    /**
+     * Update matricula for ServidorEfetivo
+     * 
+     * @param int $pesId
+     * @param string $matricula
+     */
+    private function updateMatricula($pesId, $matricula)
+    {
+        $this->servidorEfetivoRepository->updateMatricula($pesId, $matricula);
+    }
+
+    /**
+     * Validate no active temporary link exists for the person
+     * 
+     * @param int $pesId
+     * @throws \DomainException
+     */
+    private function validateNoActiveTemporaryLink(int $pesId): void
+    {
+        if ($this->servidorEfetivoRepository->hasActiveTemporaryLink($pesId)) {
+            throw new \DomainException('Pessoa com vínculo temporário ativo não pode ser servidor efetivo');
+        }
+    }
+
+    /**
+     * Check if ServidorEfetivo has dependencies
+     * 
+     * @param ServidorEfetivo $servidorEfetivo
+     * @throws Exception
+     */
+    private function checkDependencies(ServidorEfetivo $servidorEfetivo)
+    {
+        if ($this->servidorEfetivoRepository->hasPessoa($servidorEfetivo)) {
+            throw new Exception('Não é possível excluir a servidor efetivo. Existe uma pessoa associado a ela.');
+        }
+
+        if ($this->servidorEfetivoRepository->hasLotacoes($servidorEfetivo)) {
+            throw new Exception('Não é possível excluir a servidor efetivo. Existem lotações associadas a ela.');
+        }
+    }
 }

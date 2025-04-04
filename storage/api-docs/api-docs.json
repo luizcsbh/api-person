@@ -1064,8 +1064,8 @@
                                     },
                                     "pes_data_nascimento": {
                                         "type": "string",
-                                        "format": "date-time",
-                                        "example": "1978-08-23"
+                                        "format": "datetime",
+                                        "example": "1978-08-23T12:00:00Z"
                                     },
                                     "pes_sexo": {
                                         "type": "string",
@@ -1258,8 +1258,8 @@
                                     },
                                     "pes_data_nascimento": {
                                         "type": "string",
-                                        "format": "date",
-                                        "example": "1978-08-23"
+                                        "format": "datetimee",
+                                        "example": "1978-08-23T12:00:00Z"
                                     },
                                     "pes_sexo": {
                                         "type": "string",
@@ -1507,8 +1507,8 @@
                                     },
                                     "pes_data_nascimento": {
                                         "type": "string",
-                                        "format": "date-time",
-                                        "example": "1978-08-23"
+                                        "format": "datetime",
+                                        "example": "1978-08-23T12:00:00Z"
                                     },
                                     "pes_sexo": {
                                         "type": "string",
@@ -1871,6 +1871,517 @@
                                         "message": {
                                             "type": "string",
                                             "example": "Erro ao excluir o servidor efetivo."
+                                        },
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Detalhes do erro."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/servidores-temporarios": {
+            "get": {
+                "tags": [
+                    "Servidor Temporario"
+                ],
+                "summary": "Lista todos as servidores temporarios",
+                "description": "Retorna uma lista de servidores temporarios armazenados no banco de dados.",
+                "operationId": "cda8f6f43a500bdb57c3748c315bdc13",
+                "responses": {
+                    "200": {
+                        "description": "Lista de servidores temporarios retornada com sucesso",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/ServidorTemporario"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Nenhum servidor temporario encontrado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Não há servidores temporarios cadastrados!"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Erro interno ao buscar os servidores temporarios",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Erro ao buscar os servidores temporarios."
+                                        },
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Detalhes do erro"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Servidor Temporario"
+                ],
+                "summary": "Cria um servidor temporario",
+                "description": "Registra um servidor temporario no banco de dados.",
+                "operationId": "f9f70bb42ddcb3aee288b56dc3564243",
+                "requestBody": {
+                    "description": "Dados necessários para criar um servidor temporario",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "pes_nome",
+                                    "pes_cpf",
+                                    "pes_data_nascimento",
+                                    "st_data_admissao",
+                                    "st_data_demissao",
+                                    "pes_sexo",
+                                    "pes_mae",
+                                    "pes_pai",
+                                    "cid_id",
+                                    "end_tipo_logradouro",
+                                    "end_logradouro",
+                                    "end_numero",
+                                    "end_bairro"
+                                ],
+                                "properties": {
+                                    "pes_nome": {
+                                        "type": "string",
+                                        "example": "João da Silva"
+                                    },
+                                    "pes_cpf": {
+                                        "type": "string",
+                                        "example": "111.222.333-44"
+                                    },
+                                    "pes_data_nascimento": {
+                                        "type": "string",
+                                        "format": "datetime",
+                                        "example": "1978-08-23T12:00:00Z"
+                                    },
+                                    "st_data_admissao": {
+                                        "type": "string",
+                                        "format": "datetime",
+                                        "example": "2021-02-15T12:00:00Z"
+                                    },
+                                    "st_data_demissao": {
+                                        "type": "string",
+                                        "format": "datetime",
+                                        "example": "0000-00-00T12:00:00Z"
+                                    },
+                                    "pes_sexo": {
+                                        "type": "string",
+                                        "example": "Masculino"
+                                    },
+                                    "pes_mae": {
+                                        "type": "string",
+                                        "example": "Maria Aparecida da Silva"
+                                    },
+                                    "pes_pai": {
+                                        "type": "string",
+                                        "example": "Cícero Joaquim da Silva"
+                                    },
+                                    "cid_id": {
+                                        "type": "integer",
+                                        "example": "21"
+                                    },
+                                    "end_tipo_logradouro": {
+                                        "type": "string",
+                                        "example": "Avenida"
+                                    },
+                                    "end_logradouro": {
+                                        "type": "string",
+                                        "example": "Silviano Brandão"
+                                    },
+                                    "end_numero": {
+                                        "type": "integer",
+                                        "example": "1000"
+                                    },
+                                    "end_complemento": {
+                                        "type": "string",
+                                        "example": "Bloco E, 50 apartamento 303"
+                                    },
+                                    "end_bairro": {
+                                        "type": "string",
+                                        "example": "Horto Florestal"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Pessoa criado com sucesso",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Pessoa criado com sucesso."
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/Pessoa"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Erro ao criar o servidor temporario.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Erro ao criar o servidor temporario."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/servidores-temporarios/{id}": {
+            "get": {
+                "tags": [
+                    "Servidor Temporario"
+                ],
+                "summary": "Obtém os detalhes de um servidor temporario",
+                "description": "Retorna os detalhes de um servidor temporario em específico pelo ID.",
+                "operationId": "506e94822a6574f284d004fff1d5561e",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID da servidor temporario",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Detalhes da servidor temporario retornados com sucesso",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/ServidorTemporario"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Servidor Temporario não encontrado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Servidor Temporario não encontrado!"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Erro interno ao buscar os servidores temporarios",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Erro ao buscar os servidores temporarios."
+                                        },
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Detalhes do erro"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Servidor Temporario"
+                ],
+                "summary": "Atualiza um servidor temporario existente",
+                "description": "Atualiza os dados de uma servidor temporario com base no ID fornecido.",
+                "operationId": "5a0563d319f2fa603e581693a57c8379",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID da servidor temporario a ser atualizado",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "description": "Dados para atualização da servidor temporario",
+                    "required": false,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "st_data_admissao",
+                                    "st_data_demissao"
+                                ],
+                                "properties": {
+                                    "st_data_admissao": {
+                                        "type": "string",
+                                        "format": "datetime",
+                                        "example": "2021-02-15T12:00:00Z"
+                                    },
+                                    "st_data_demissao": {
+                                        "type": "string",
+                                        "format": "datetime",
+                                        "example": "0000-00-00T12:00:00Z"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Servidor Temporario atualizado com sucesso",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Servidor Temporario atualizado com sucesso!"
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/ServidorTemporario"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Registro não encontrado!",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Registro não encontrado!"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Erro ao processar a atualização da servidor temporario",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Erro ao processar a solicitação."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Servidor Temporario"
+                ],
+                "summary": "Exclui um servidor temporario",
+                "description": "Exclui um servidor temporario do banco de dados com base no ID fornecido.",
+                "operationId": "90ef3909aecdde74b03410d5e9c4c425",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID da servidor temporario a ser excluído",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Servidor temporario excluído com sucesso",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Servidor temporario excluído com sucesso."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Servidor temporario não encontrado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Servidor temporario não encontrado."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Erro ao excluir o servidor temporario devido a dependências",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Erro ao deletar o servidor temporario. Possivelmente há dependências associadas."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Erro ao excluir o servidor temporario",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Erro ao excluir o servidor temporario."
                                         },
                                         "error": {
                                             "type": "string",
@@ -2504,8 +3015,36 @@
                     "se_matricula": {
                         "description": "Matricula do Servidor",
                         "type": "string",
-                        "format": "date-time",
                         "example": "2003456788467"
+                    }
+                },
+                "type": "object"
+            },
+            "ServidorTemporario": {
+                "title": "Servidor Temporario",
+                "description": "Modelo de Servidor Temporario",
+                "required": [
+                    "pes_id",
+                    "st_data_admissao",
+                    "st_data_demissao"
+                ],
+                "properties": {
+                    "pes_id": {
+                        "description": "ID da pessoa",
+                        "type": "integer",
+                        "example": "2"
+                    },
+                    "st_data_admissao": {
+                        "description": "Data de admissão",
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-05-01T00:00:00"
+                    },
+                    "st_data_demissao": {
+                        "description": "Data de demissão",
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-05-01T00:00:00"
                     }
                 },
                 "type": "object"
@@ -2546,6 +3085,10 @@
         {
             "name": "Servidor Efetivo",
             "description": "Gerenciamento dos servidores efetivos"
+        },
+        {
+            "name": "Servidor Temporario",
+            "description": "Gerenciamento dos servidores temporarios"
         },
         {
             "name": "Unidade",
